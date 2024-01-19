@@ -1,0 +1,14 @@
+{
+  "name": "project467",
+  "version": "1.0.0",
+  "description": "The repository for the undescribed e-commerce website we are supposed to make.",
+  "main": "./source/server.js",
+  "scripts": {
+    "server": "node source/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
