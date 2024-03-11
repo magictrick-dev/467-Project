@@ -5,7 +5,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"server": "node server.js"
+		"server": "node server.js",
+        "start": "vite build && node server.js"
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
@@ -21,6 +22,7 @@
 	"dependencies": {
 		"cors": "^2.8.5",
 		"express": "^4.18.2",
+		"mysql2": "^3.9.2",
 		"sqlite3": "^5.1.7"
 	}
 }
