@@ -77,6 +77,20 @@ not the ideal with of handling this because this will most likely come from
 a form which the user submits. We will need to handle this differently, but
 the core driver API is built: `authorize()`.
 
+**Mailing**
+
+Probably best if you didn't play with this.
+
+**Printing PDFs**
+
+See `server.js` for the API endpoint examples. Uses PDFKit to generate and send
+PDFs which can be programmatically generated without having to create physical
+files. Very neat.
+
+This *requires* that you build and run the server rather than executing the dev
+build since it uses express JS as the primary API-handler for this. Trust me,
+any other way is a hassle.
+
 **Bootstrap CSS**
 
 I have already included bootstrap as the CSS framework for the project. You
