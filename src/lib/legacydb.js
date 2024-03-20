@@ -14,7 +14,7 @@ set_connection()
 
     // If we already have the connection, exit.
     if (database_connection != null)
-        return;
+        return database_connection;
 
     // Otherwise, create the connection.
     database_connection = mysql.createConnection({
