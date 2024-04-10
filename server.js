@@ -39,7 +39,7 @@ app.get('/api/invoice/:iid', (request, response) => {
 
     let invoice_document = new pdfkit;
 
-    // Set up company information
+    // Set up company information.
     const companyInfo = {
         name: "Chris' Private Parts",
         address: "123 Main Street, Cityville, State, Zip",
@@ -47,31 +47,31 @@ app.get('/api/invoice/:iid', (request, response) => {
         email: "info@chrisprivateparts.com"
     };
 
-    // Set up customer information (you can fetch this from the database or request parameters)
+    // Set up customer information (you can fetch this from the database or request parameters).
     const customerInfo = {
         name: "Customer Name",
         address: "456 Elm Street, Townsville, State, Zip",
         email: "customer@example.com"
     };
 
-    // Set up invoice details (from cart information on the database and part information from Legacy)
+    // Set up invoice details (from cart information on the database and part information from Legacy).
     const invoiceDetails = {
         id: request.params.iid,
         date: new Date().toLocaleDateString('en-US'),
         items: [
             { description: "Product 1", quantity: 1, price: 50 },
             { description: "Product 2", quantity: 2, price: 25 },
-            // Add more items as needed
+            // Add more items as needed.
         ]
     };
 
-    // Add content to the PDF
+    // Add content to the PDF.
     invoice_document.font('Helvetica-Bold');
     invoice_document.fontSize(18);
     invoice_document.text('Invoice', { align: 'center' });
     invoice_document.moveDown();
 
-    // Company information
+    // Company information.
     invoice_document.font('Helvetica');
     invoice_document.fontSize(12);
     invoice_document.text(companyInfo.name);
@@ -80,23 +80,23 @@ app.get('/api/invoice/:iid', (request, response) => {
     invoice_document.text(`Email: ${companyInfo.email}`);
     invoice_document.moveDown();
 
-    // Customer information
+    // Customer information.
     invoice_document.text(`Bill To: ${customerInfo.name}`);
     invoice_document.text(customerInfo.address);
     invoice_document.text(`Email: ${customerInfo.email}`);
     invoice_document.moveDown();
 
-    // Invoice details
+    // Invoice details.
     invoice_document.text(`Invoice ID: ${invoiceDetails.id}`);
     invoice_document.text(`Date: ${invoiceDetails.date}`);
     invoice_document.moveDown();
 
     // Itemized list
-    const tableStartY = 300; // Adjust this value as needed
-    const col1X = 100; // X position for first column
-    const col2X = 250; // X position for second column
-    const col3X = 400; // X position for third column
-    const col4X = 500; // X position for fourth column
+    const tableStartY = 300; // Adjust this value as needed.
+    const col1X = 100; // X position for first column.
+    const col2X = 250; // X position for second column.
+    const col3X = 400; // X position for third column.
+    const col4X = 500; // X position for fourth column.
 
     invoice_document.font('Helvetica-Bold');
     invoice_document.fontSize(12);
@@ -107,7 +107,7 @@ app.get('/api/invoice/:iid', (request, response) => {
 
     invoice_document.font('Helvetica');
     invoiceDetails.items.forEach((item, index) => {
-        const rowY = tableStartY + (index + 1) * 20; // Adjust 20 for row height
+        const rowY = tableStartY + (index + 1) * 20; // Adjust 20 for row height.
         invoice_document.text(item.description, col1X, rowY);
         invoice_document.text(item.quantity.toString(), col2X, rowY);
         invoice_document.text('$' + item.price.toFixed(2), col3X, rowY);
@@ -115,7 +115,7 @@ app.get('/api/invoice/:iid', (request, response) => {
     });
     invoice_document.moveDown();
 
-    // Thank you message
+    // Thank you message.
     invoice_document.text("Thank you for choosing Chris' Private Parts!",100);
 
     response.writeHead(200, {
@@ -131,7 +131,29 @@ app.get('/api/invoice/:iid', (request, response) => {
 app.get('/api/packlist/:pid', (request, response) => {
 
     let packlist_document = new pdfkit;
-    packlist_document.text(`Here is the packlist: ${request.params.pid}`, 100, 100);
+
+    // Company name.
+    packlist_document.font('Helvetica-Bold');
+    packlist_document.fontSize(20);
+    packlist_document.text(`Chris' Private Parts`, 25, 20);
+
+    // Company slogan.
+    packlist_document.font('Helvetica');
+    packlist_document.fontSize(12);
+    packlist_document.text(`Taking matters into both hands.`, 25, 42);
+
+    // Web address.
+    packlist_document.text(`www.chrisprivateparts.com`, 25, 55);
+    packlist_document.moveDown();
+
+    // Packing slip top-right title.
+    packlist_document.font('Helvetica-Bold');
+    packlist_document.fillColor(44, 111, 187);
+    packlist_document.fontSize(30);
+    packlist_document.text(`PACKING SLIP`, 385, 15, { width: 300 });
+
+
+    //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
     response.writeHead(200, {
         'Content-Type': 'application/pdf',
