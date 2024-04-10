@@ -66,30 +66,30 @@ app.get('/api/invoice/:iid', (request, response) => {
     };
 
     // Add content to the PDF.
-    invoice_document.font('Helvetica-Bold');
-    invoice_document.fontSize(18);
-    invoice_document.text('Invoice', { align: 'center' });
-    invoice_document.moveDown();
+    invoice_document.font('Helvetica-Bold')
+        .fontSize(18)
+        .text('Invoice', { align: 'center' })
+        .moveDown();
 
     // Company information.
-    invoice_document.font('Helvetica');
-    invoice_document.fontSize(12);
-    invoice_document.text(companyInfo.name);
-    invoice_document.text(companyInfo.address);
-    invoice_document.text(`Phone: ${companyInfo.phone}`);
-    invoice_document.text(`Email: ${companyInfo.email}`);
-    invoice_document.moveDown();
+    invoice_document.font('Helvetica')
+        .fontSize(12)
+        .text(companyInfo.name)
+        .text(companyInfo.address)
+        .text(`Phone: ${companyInfo.phone}`)
+        .text(`Email: ${companyInfo.email}`)
+        .moveDown();
 
     // Customer information.
-    invoice_document.text(`Bill To: ${customerInfo.name}`);
-    invoice_document.text(customerInfo.address);
-    invoice_document.text(`Email: ${customerInfo.email}`);
-    invoice_document.moveDown();
+    invoice_document.text(`Bill To: ${customerInfo.name}`)
+        .text(customerInfo.address)
+        .text(`Email: ${customerInfo.email}`)
+        .moveDown();
 
     // Invoice details.
-    invoice_document.text(`Invoice ID: ${invoiceDetails.id}`);
-    invoice_document.text(`Date: ${invoiceDetails.date}`);
-    invoice_document.moveDown();
+    invoice_document.text(`Invoice ID: ${invoiceDetails.id}`)
+        .text(`Date: ${invoiceDetails.date}`)
+        .moveDown();
 
     // Itemized list
     const tableStartY = 300; // Adjust this value as needed.
@@ -98,12 +98,12 @@ app.get('/api/invoice/:iid', (request, response) => {
     const col3X = 400; // X position for third column.
     const col4X = 500; // X position for fourth column.
 
-    invoice_document.font('Helvetica-Bold');
-    invoice_document.fontSize(12);
-    invoice_document.text('Item', col1X, tableStartY);
-    invoice_document.text('Quantity', col2X, tableStartY);
-    invoice_document.text('Price', col3X, tableStartY);
-    invoice_document.text('Total', col4X, tableStartY);
+    invoice_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .text('Item', col1X, tableStartY)
+        .text('Quantity', col2X, tableStartY)
+        .text('Price', col3X, tableStartY)
+        .text('Total', col4X, tableStartY);
 
     invoice_document.font('Helvetica');
     invoiceDetails.items.forEach((item, index) => {
@@ -132,26 +132,50 @@ app.get('/api/packlist/:pid', (request, response) => {
 
     let packlist_document = new pdfkit;
 
+    // General information for the packing slip.
+    const packlistInfo = {
+        id: request.params.pid,
+        date: new Date().toLocaleDateString('en-US'),
+    };
+
     // Company name.
-    packlist_document.font('Helvetica-Bold');
-    packlist_document.fontSize(20);
-    packlist_document.text(`Chris' Private Parts`, 25, 20);
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(20)
+        .text(`Chris' Private Parts`, 25, 20);
 
     // Company slogan.
-    packlist_document.font('Helvetica');
-    packlist_document.fontSize(12);
-    packlist_document.text(`Taking matters into both hands.`, 25, 42);
+    packlist_document.font('Helvetica')
+        .fontSize(12)
+        .text(`Taking matters into both hands.`, 25, 42);
 
     // Web address.
-    packlist_document.text(`www.chrisprivateparts.com`, 25, 55);
-    packlist_document.moveDown();
+    packlist_document.text(`www.chrisprivateparts.com`, 25, 55)
+        .moveDown();
 
     // Packing slip top-right title.
-    packlist_document.font('Helvetica-Bold');
-    packlist_document.fillColor(44, 111, 187);
-    packlist_document.fontSize(30);
-    packlist_document.text(`PACKING SLIP`, 385, 15, { width: 300 });
+    packlist_document.font('Helvetica-Bold')
+        .fillColor('#2c6fbb')
+        .fontSize(30)
+        .text(`PACKING SLIP`, 385, 15, { width: 300 });
 
+    // Date of order.
+    packlist_document.font('Helvetica-Bold')
+        .fillColor('black')
+        .fontSize(12)
+        .text(`DATE`, 410, 45);
+    packlist_document.rect(500, 40, 90, 15)
+        .stroke();
+    packlist_document.font('Helvetica')
+        .fontSize(10)
+        .text(`${packlistInfo.date}`, 525, 43, { width: 100 });
+
+    // Customer ID
+    packlist_document.font('Helvetica-Bold')
+        .fillColor('black')
+        .fontSize(12)
+        .text(`CUSTOMER ID`, 410, 60);
+    packlist_document.rect(500, 55, 90, 15)
+        .stroke();
 
     //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
