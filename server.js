@@ -169,13 +169,56 @@ app.get('/api/packlist/:pid', (request, response) => {
         .fontSize(10)
         .text(`${packlistInfo.date}`, 525, 43, { width: 100 });
 
-    // Customer ID
+    // Customer ID.
     packlist_document.font('Helvetica-Bold')
         .fillColor('black')
         .fontSize(12)
         .text(`CUSTOMER ID`, 410, 60);
     packlist_document.rect(500, 55, 90, 15)
         .stroke();
+    packlist_document.font('Helvetica')
+        .fontSize(10)
+        .text(`12345`, 525, 58, { width: 200 });
+
+    // Bill to.
+    packlist_document.rect(25, 75, 200, 20)
+        .fill(`#4e5180`);
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor(`white`)
+        .text(`BILL TO`, 40, 80);
+    packlist_document.font('Helvetica')
+        .fontSize(12)
+        .fillColor(`black`)
+        .text(`[NAME]`, 35, 100)
+        .text(`[STREET ADDRESS]`, 35, 115)
+        .text(`[CITY, STREET ZIP]`, 35, 130)
+        .text(`[PHONE]`, 35, 145);
+
+    // Ship to.
+    packlist_document.rect(300, 75, 200, 20)
+        .fill(`#4e5180`);
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor(`white`)
+        .text(`SHIP TO`, 315, 80);
+    packlist_document.font('Helvetica')
+        .fontSize(12)
+        .fillColor(`black`)
+        .text(`[NAME]`, 310, 100)
+        .text(`[STREET ADDRESS]`, 310, 115)
+        .text(`[CITY, STREET ZIP]`, 310, 130)
+        .text(`[PHONE]`, 310, 145);
+
+    // Order detail line.
+    packlist_document.rect(25, 160, 565, 20)
+        .fill(`#4e5180`);
+    packlist_document.rect(500, 40, 90, 20)
+        .stroke();
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor(`white`)
+        .text(`ORDER DATE`, 40, 165);
 
     //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
