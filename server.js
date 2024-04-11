@@ -137,11 +137,11 @@ app.get('/api/packlist/:pid', (request, response) => {
         id: request.params.pid,
         date: new Date().toLocaleDateString('en-US'),
         items: [
-            { itemnum: "1234", description: "Product 1", orderqty: 1, shipqty: 1 },
-            { itemnum: "52134", description: "Product 2", orderqty: 2, shipqty: 1 },
-            { itemnum: "42-4214E", description: "Chicken Nuggets", orderqty: 10, shipqty: 20 },
-            { itemnum: "402", description: "Chris' Special Sauce", orderqty: 100, shipqty: 2 },
-            { itemnum: "990012", description: "Javascript", orderqty: 1, shipqty: 0 },
+            { itemnum: "1234", description: "Product 1", orderqty: 1, shipqty: 1, weight: 1.25 },
+            { itemnum: "52134", description: "Product 2", orderqty: 2, shipqty: 1, weight: 2.50 },
+            { itemnum: "42-4214E", description: "Chicken Nuggets", orderqty: 10, shipqty: 20, weight: 1.00 },
+            { itemnum: "402", description: "Chris' Special Sauce", orderqty: 100, shipqty: 2, weight: 5.00 },
+            { itemnum: "990012", description: "Javascript", orderqty: 1, shipqty: 0, weight: 0.5 },
             // Add more items as needed.
         ]
     };
@@ -184,7 +184,7 @@ app.get('/api/packlist/:pid', (request, response) => {
         .text(`Taking matters into both hands.`, 25, 42);
 
     // Web address.
-    packlist_document.text(`www.chrisprivateparts.com`, 25, 55)
+    packlist_document.text(`www.chrisprivateparts.com`, 25, 57)
         .moveDown();
 
     // Packing slip top-right title.
@@ -193,7 +193,12 @@ app.get('/api/packlist/:pid', (request, response) => {
         .fontSize(30)
         .text(`PACKING SLIP`, 385, 15, { width: 300 });
 
-    // Date of order.
+    // Calculate position of order date.
+    const pdateWidth = packlist_document.widthOfString(packlistInfo.date);
+    const pdateX = 545 + (90 - pdateWidth) / 2;
+    const pdateY = 42 + (15 - 12) / 2;
+
+    // Print date of packlist print.
     packlist_document.font('Helvetica-Bold')
         .fillColor('black')
         .fontSize(12)
@@ -202,9 +207,7 @@ app.get('/api/packlist/:pid', (request, response) => {
         .stroke();
     packlist_document.font('Helvetica')
         .fontSize(10)
-        .text(`${packlistInfo.date}`, 525, 43, { width: 100 });
-
-    // Customer ID.
+        .text(`${packlistInfo.date}`, pdateX, pdateY, { width: pdateWidth });
 
     // Calculate the position to center justify the text within boxed area.
     const textWidth = packlist_document.widthOfString(orderInfo.customerid);
@@ -265,6 +268,25 @@ app.get('/api/packlist/:pid', (request, response) => {
         .text(`ORDER DATE`, 42, 165)
         .text(`ORDER #`, 177, 165);
 
+    // Math to center date and order number.
+    const odateWidth = packlist_document.widthOfString(orderInfo.date);
+    const odateX = 25 + (115 - odateWidth) / 2;    // X position for date.
+    const odateY = 182 + (20 - 12) / 2;           // Y position for date.
+    const orderWidth = packlist_document.widthOfString(orderInfo.ordernum);
+    const orderX = 140 + (130 - orderWidth) / 2;  // X position for order.
+    const orderY = 182 + (20 - 12) / 2;          // Y position for order.
+
+    // Print order date and order number.
+    packlist_document.font('Helvetica')
+        .fontSize(12)
+        .fillColor(`black`)
+        .text(`${orderInfo.date}`, odateX, odateY)
+        .text(`${orderInfo.ordernum}`, orderX, orderY);
+
+    // Variables to hold total quantity ordered and shipped.
+    let totalOrdered = 0;
+    let totalShipped = 0;
+
     // Draw parts table.
     packlist_document.rect(25, 205, 565, 20)
         .fill(`#4e5180`);
@@ -275,7 +297,7 @@ app.get('/api/packlist/:pid', (request, response) => {
         .text(`DESCRIPTION`, 227, 210)
         .text(`ORDER QTY`, 410, 210)
         .text(`SHIP QTY`, 515, 210, { width: 95 });
-    drawPackTable(packlist_document, 15, 25, 225);
+    drawPackTable(packlist_document, 20, 25, 225);
 
     // Insert parts onto table.
     const tableStartY = 230; // Adjust this value as needed.
@@ -285,6 +307,9 @@ app.get('/api/packlist/:pid', (request, response) => {
     packlist_document.font('Helvetica')
         .fillColor('black');
     packlistInfo.items.forEach((item, index) => {
+        totalOrdered += item.orderqty;
+        totalShipped += item.shipqty;
+
         const rowY = tableStartY + (index) * 20; // Adjust 20 for row height.
 
         // Math to center justify order and shop qty in their boxes.
@@ -298,6 +323,21 @@ app.get('/api/packlist/:pid', (request, response) => {
         packlist_document.text(item.orderqty, orderX, rowY);
         packlist_document.text(item.shipqty, shipX, rowY, { width: shipWidth });
     });
+
+    // Math to center justify totals.
+    const tOrderWidth = packlist_document.widthOfString(totalOrdered.toString());
+    const tOrderX = 400 + (95 - tOrderWidth) / 2;      // X position for total order number.
+    const tShippedWidth = packlist_document.widthOfString(totalShipped.toString());
+    const tShippedX = 495 + (95 - tShippedWidth) / 2;  // X position for total shipped number.
+
+    // Print totals.
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor('black')
+        .text(`TOTAL: `, 400 - packlist_document.widthOfString(`TOTAL: `), 630)
+    packlist_document.font('Helvetica')
+        .text(`${totalOrdered.toString()}`, tOrderX, 630)
+        .text(`${totalShipped.toString()}`, tShippedX, 630, { width: tShippedWidth });
 
     //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
