@@ -116,7 +116,7 @@ app.get('/api/invoice/:iid', (request, response) => {
     invoice_document.moveDown();
 
     // Thank you message.
-    invoice_document.text("Thank you for choosing Chris' Private Parts!",100);
+    invoice_document.text("Thank you for choosing Chris' Private Parts!", 100);
 
     response.writeHead(200, {
         'Content-Type': 'application/pdf',
@@ -136,6 +136,41 @@ app.get('/api/packlist/:pid', (request, response) => {
     const packlistInfo = {
         id: request.params.pid,
         date: new Date().toLocaleDateString('en-US'),
+        items: [
+            { itemnum: "1234", description: "Product 1", orderqty: 1, shipqty: 1 },
+            { itemnum: "52134", description: "Product 2", orderqty: 2, shipqty: 1 },
+            { itemnum: "42-4214E", description: "Chicken Nuggets", orderqty: 10, shipqty: 20 },
+            { itemnum: "402", description: "Chris' Special Sauce", orderqty: 100, shipqty: 2 },
+            { itemnum: "990012", description: "Javascript", orderqty: 1, shipqty: 0 },
+            // Add more items as needed.
+        ]
+    };
+
+    // Specific order information.
+    const orderInfo = {
+        customerid: "1",
+        date: "4/8/2024",
+        ordernum: "123456"
+    };
+
+    // Set up SHIP TO information (you can fetch this from the database or request parameters).
+    const shipToInfo = {
+        name: "Chris Dejong",
+        street: "1110 Varsity Blvd",
+        city: "Dekalb",
+        state: "IL",
+        zip: "60115",
+        phone: "6306361543"
+    };
+
+    // Set up BILL TO information (you can fetch this from the database or request parameters).
+    const billToInfo = {
+        name: "Anita Ye",
+        street: "50 Eastfield rd",
+        city: "Montgomery",
+        state: "IL",
+        zip: "60538",
+        phone: "3314258243"
     };
 
     // Company name.
@@ -170,6 +205,13 @@ app.get('/api/packlist/:pid', (request, response) => {
         .text(`${packlistInfo.date}`, 525, 43, { width: 100 });
 
     // Customer ID.
+
+    // Calculate the position to center justify the text within boxed area.
+    const textWidth = packlist_document.widthOfString(orderInfo.customerid);
+    const cidX = 500 + (90 - textWidth) / 2;
+    const cidY = 57 + (15 - 12) / 2;  // Adjusting for font size.
+
+    // Print Customer ID.
     packlist_document.font('Helvetica-Bold')
         .fillColor('black')
         .fontSize(12)
@@ -178,7 +220,7 @@ app.get('/api/packlist/:pid', (request, response) => {
         .stroke();
     packlist_document.font('Helvetica')
         .fontSize(10)
-        .text(`12345`, 525, 58, { width: 200 });
+        .text(`${orderInfo.customerid}`, cidX, cidY, { width: 90 });
 
     // Bill to.
     packlist_document.rect(25, 75, 200, 20)
@@ -190,10 +232,10 @@ app.get('/api/packlist/:pid', (request, response) => {
     packlist_document.font('Helvetica')
         .fontSize(12)
         .fillColor(`black`)
-        .text(`[NAME]`, 35, 100)
-        .text(`[STREET ADDRESS]`, 35, 115)
-        .text(`[CITY, STREET ZIP]`, 35, 130)
-        .text(`[PHONE]`, 35, 145);
+        .text(`${billToInfo.name}`, 35, 100)
+        .text(`${billToInfo.street}`, 35, 115)
+        .text(`${billToInfo.city}, ${billToInfo.state} ${billToInfo.zip}`, 35, 130)
+        .text(`(${billToInfo.phone.substring(0, 3)}) ${billToInfo.phone.substring(3, 6)}-${billToInfo.phone.substring(6, 10)}`, 35, 145);
 
     // Ship to.
     packlist_document.rect(300, 75, 200, 20)
@@ -205,20 +247,57 @@ app.get('/api/packlist/:pid', (request, response) => {
     packlist_document.font('Helvetica')
         .fontSize(12)
         .fillColor(`black`)
-        .text(`[NAME]`, 310, 100)
-        .text(`[STREET ADDRESS]`, 310, 115)
-        .text(`[CITY, STREET ZIP]`, 310, 130)
-        .text(`[PHONE]`, 310, 145);
+        .text(`${shipToInfo.name}`, 310, 100)
+        .text(`${shipToInfo.street}`, 310, 115)
+        .text(`${shipToInfo.city}, ${shipToInfo.state} ${shipToInfo.zip}`, 310, 130)
+        .text(`(${shipToInfo.phone.substring(0, 3)}) ${shipToInfo.phone.substring(3, 6)}-${shipToInfo.phone.substring(6,10)}`, 310, 145);
 
     // Order detail line.
-    packlist_document.rect(25, 160, 565, 20)
+    packlist_document.rect(25, 160, 245, 20)
         .fill(`#4e5180`);
-    packlist_document.rect(500, 40, 90, 20)
+    packlist_document.rect(25, 180, 115, 20)
+        .stroke();
+    packlist_document.rect(140, 180, 130, 20)
         .stroke();
     packlist_document.font('Helvetica-Bold')
         .fontSize(12)
         .fillColor(`white`)
-        .text(`ORDER DATE`, 40, 165);
+        .text(`ORDER DATE`, 42, 165)
+        .text(`ORDER #`, 177, 165);
+
+    // Draw parts table.
+    packlist_document.rect(25, 205, 565, 20)
+        .fill(`#4e5180`);
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor(`white`)
+        .text(`ITEM #`, 63, 210)
+        .text(`DESCRIPTION`, 227, 210)
+        .text(`ORDER QTY`, 410, 210)
+        .text(`SHIP QTY`, 515, 210, { width: 95 });
+    drawPackTable(packlist_document, 15, 25, 225);
+
+    // Insert parts onto table.
+    const tableStartY = 230; // Adjust this value as needed.
+    const col1X = 30;  // X position for first column.
+    const col2X = 145; // X position for second column.
+
+    packlist_document.font('Helvetica')
+        .fillColor('black');
+    packlistInfo.items.forEach((item, index) => {
+        const rowY = tableStartY + (index) * 20; // Adjust 20 for row height.
+
+        // Math to center justify order and shop qty in their boxes.
+        const orderWidth = packlist_document.widthOfString(item.orderqty.toString());
+        const orderX = 400 + (95 - orderWidth) / 2;  // X position for the third column.
+        const shipWidth = packlist_document.widthOfString(item.shipqty.toString());
+        const shipX = 495 + (95 - shipWidth) / 2;    // X position for the fourth column.
+
+        packlist_document.text(item.itemnum, col1X, rowY);
+        packlist_document.text(item.description, col2X, rowY);
+        packlist_document.text(item.orderqty, orderX, rowY);
+        packlist_document.text(item.shipqty, shipX, rowY, { width: shipWidth });
+    });
 
     //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
@@ -231,6 +310,25 @@ app.get('/api/packlist/:pid', (request, response) => {
     packlist_document.end();
 
 });
+
+// Function to draw table for packing list.
+function drawPackTable(doc, rows, startX, startY) {
+    let currentX = startX;
+    let currentY = startY;
+
+    for (let i = 0; i < rows; ++i) {
+        doc.rect(currentX, currentY, 115, 20)
+            .stroke();
+        doc.rect(currentX + 115, currentY, 260, 20)
+            .stroke();
+        doc.rect(currentX + 375, currentY, 95, 20)
+            .stroke();
+        doc.rect(currentX + 470, currentY, 95, 20)
+            .stroke();
+
+        currentY += 20;
+    }
+}
 
 app.get('/api/shiplabel/:slabel', (request, response) => {
 
