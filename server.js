@@ -42,81 +42,186 @@ app.get('/api/invoice/:iid', (request, response) => {
     // Set up company information.
     const companyInfo = {
         name: "Chris' Private Parts",
-        address: "123 Main Street, Cityville, State, Zip",
-        phone: "123-456-7890",
-        email: "info@chrisprivateparts.com"
+        email: "www.chrisprivateparts.com"
     };
 
     // Set up customer information (you can fetch this from the database or request parameters).
     const customerInfo = {
-        name: "Customer Name",
-        address: "456 Elm Street, Townsville, State, Zip",
-        email: "customer@example.com"
+        name: "Chris Dejong",
+        street: "1110 Varsity Blvd",
+        city: "Dekalb",
+        state: "IL",
+        zip: "60115",
+        email: "chrisLovesJS@hotmail.com",
+        phone: "3314525215"
     };
 
-    // Set up invoice details (from cart information on the database and part information from Legacy).
+    // Set up invoice details (from order line information on the database and part information from Legacy).
     const invoiceDetails = {
         id: request.params.iid,
-        date: new Date().toLocaleDateString('en-US'),
+        date: "4/12/2024",
         items: [
-            { description: "Product 1", quantity: 1, price: 50 },
-            { description: "Product 2", quantity: 2, price: 25 },
+            { itemnum: "4215", description: "Product 1", quantity: 1, price: 5000 },
+            { itemnum: "45-A421E", description: "Product 2", quantity: 2, price: 25 },
             // Add more items as needed.
         ]
     };
 
+
+
+
+
+
     // Add content to the PDF.
     invoice_document.font('Helvetica-Bold')
-        .fontSize(18)
-        .text('Invoice', { align: 'center' })
-        .moveDown();
+        .fillColor('#2c6fbb')
+        .fontSize(30)
+        .text('INVOICE', 470, 15, { width: invoice_document.widthOfString(`INVOICE`) });
 
     // Company information.
+    invoice_document.font('Helvetica-Bold')
+        .fillColor('black')
+        .fontSize(20)
+        .text(companyInfo.name, 25, 20);
     invoice_document.font('Helvetica')
         .fontSize(12)
-        .text(companyInfo.name)
-        .text(companyInfo.address)
-        .text(`Phone: ${companyInfo.phone}`)
-        .text(`Email: ${companyInfo.email}`)
+        .text(`Taking matters into both hands.`, 25, 42)
+        .text(`${companyInfo.email}`)
         .moveDown();
 
-    // Customer information.
-    invoice_document.text(`Bill To: ${customerInfo.name}`)
-        .text(customerInfo.address)
-        .text(`Email: ${customerInfo.email}`)
-        .moveDown();
-
-    // Invoice details.
-    invoice_document.text(`Invoice ID: ${invoiceDetails.id}`)
-        .text(`Date: ${invoiceDetails.date}`)
-        .moveDown();
-
-    // Itemized list
-    const tableStartY = 300; // Adjust this value as needed.
-    const col1X = 100; // X position for first column.
-    const col2X = 250; // X position for second column.
-    const col3X = 400; // X position for third column.
-    const col4X = 500; // X position for fourth column.
-
+    // Bill to header.
+    invoice_document.rect(25, 75, 200, 20)
+        .fill(`#4e5180`);
     invoice_document.font('Helvetica-Bold')
         .fontSize(12)
-        .text('Item', col1X, tableStartY)
-        .text('Quantity', col2X, tableStartY)
-        .text('Price', col3X, tableStartY)
-        .text('Total', col4X, tableStartY);
+        .fillColor(`white`)
+        .text(`BILL TO`, 40, 80);
 
-    invoice_document.font('Helvetica');
+    // Bill to customer information.
+    invoice_document.font('Helvetica')
+        .fontSize(12)
+        .fillColor(`black`)
+        .text(`${customerInfo.name}`, 35, 100)
+        .text(`${customerInfo.street}`, 35, 115)
+        .text(`${customerInfo.city}, ${customerInfo.state} ${customerInfo.zip}`, 35, 130)
+        .text(`${customerInfo.email}`, 35, 145)
+        .text(`(${customerInfo.phone.substring(0, 3)}) ${customerInfo.phone.substring(3, 6)}-${customerInfo.phone.substring(6, 10)}`, 35, 160);
+
+    // Calculate position of order date.
+    const dateWidth = invoice_document.widthOfString(invoiceDetails.date);
+    const dateX = 505 + (90 - dateWidth) / 2;
+    const dateY = 42 + (15 - 12) / 2;
+
+    // Print date for invoice.
+    invoice_document.font('Helvetica-Bold')
+        .fillColor('black')
+        .fontSize(12)
+        .text(`DATE`, 425, 45);
+    invoice_document.rect(500, 40, 90, 15)
+        .stroke();
+    invoice_document.font('Helvetica')
+        .fontSize(10)
+        .text(`${invoiceDetails.date}`, dateX, dateY, { width: dateWidth });
+
+    // Calculate the position to center justify the text within boxed area.
+    const textWidth = invoice_document.widthOfString(invoiceDetails.id);
+    const iidX = 500 + (90 - textWidth) / 2;
+    const iidY = 57 + (15 - 12) / 2;  // Adjusting for font size.
+
+    // Print Invoice ID.
+    invoice_document.font('Helvetica-Bold')
+        .fillColor('black')
+        .fontSize(12)
+        .text(`INVOICE ID`, 425, 60);
+    invoice_document.rect(500, 55, 90, 15)
+        .stroke();
+    invoice_document.font('Helvetica')
+        .fontSize(10)
+        .text(`${invoiceDetails.id}`, iidX, iidY, { textWidth });
+
+    // Our amazing QR code.
+    invoice_document.image(`static/qrcode2.png`, 500, 90, { scale: 0.5 });
+
+    // Draw table.
+    invoice_document.rect(25, 185, 565, 20)
+        .fill(`#4e5180`);
+    invoice_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor(`white`)
+        .text(`ITEM #`, 63, 190)
+        .text(`DESCRIPTION`, 140 + (212.5 - invoice_document.widthOfString(`DESCRIPTION`)) / 2, 190)
+        .text(`QTY`, 352.5 + (47.5 - invoice_document.widthOfString(`QTY`)) / 2, 190)
+        .text(`UNIT PRICE`, 400 + (95 - invoice_document.widthOfString(`UNIT PRICE`)) / 2, 190)
+        .text(`NET PRICE`, 495 + (95 - invoice_document.widthOfString(`NET PRICE`)) / 2, 190, { width: invoice_document.widthOfString(`NET PRICE`) + 20 });
+    drawInvoiceTable(invoice_document, 25, 25, 205);
+
+    // Insert items into table.
+    const tableStartY = 210; // Adjust this value as needed.
+    const col1X = 30;  // X position for first column.
+    const col2X = 145; // X position for second column.
+
+    let totalQty = 0;
+    let totalNet = 0;
+
+    invoice_document.font('Helvetica')
+        .fillColor('black');
     invoiceDetails.items.forEach((item, index) => {
-        const rowY = tableStartY + (index + 1) * 20; // Adjust 20 for row height.
-        invoice_document.text(item.description, col1X, rowY);
-        invoice_document.text(item.quantity.toString(), col2X, rowY);
-        invoice_document.text('$' + item.price.toFixed(2), col3X, rowY);
-        invoice_document.text('$' + (item.quantity * item.price).toFixed(2), col4X, rowY);
-    });
-    invoice_document.moveDown();
+        totalQty += item.quantity;
 
-    // Thank you message.
-    invoice_document.text("Thank you for choosing Chris' Private Parts!", 100);
+        const netPrice = item.quantity * item.price;
+
+        totalNet += netPrice;
+
+        const rowY = tableStartY + (index) * 20; // Adjust 20 for row height.
+
+        // Math to center justify order and shop qty in their boxes.
+        const qtyWidth = invoice_document.widthOfString(item.quantity.toString());
+        const orderX = 352.5 + (47.5 - qtyWidth) / 2;  // X position for the third column.
+        const priceWidth = invoice_document.widthOfString("$" + item.price.toFixed(2).toString());
+        const priceX = 400 + (95 - priceWidth) / 2;    // X position for the fourth column.
+        const netWidth = invoice_document.widthOfString("$" + netPrice.toFixed(2).toString());
+        const netX = 495 + (95 - netWidth) / 2;        // X position for the fifth column.
+
+        invoice_document.text(item.itemnum, col1X, rowY);
+        invoice_document.text(item.description, col2X, rowY);
+        invoice_document.text(item.quantity, orderX, rowY);
+        invoice_document.text("$" + item.price.toFixed(2), priceX, rowY);
+        invoice_document.text("$" + netPrice.toFixed(2), netX, rowY, { width: netWidth });
+    });
+
+    // Width of page.
+    const pageWidth = invoice_document.page.width;
+
+    // What I have to do to write things in the margins.
+    let margins = invoice_document.page.margins;  // Save the current margins.
+    invoice_document.page.margins = {             // Remove bottom margin so a new page does not print.
+        bottom: 0
+    };
+
+    // Compute totals location.
+    const tQtyWidth = invoice_document.widthOfString(totalQty.toString());
+    const tQtyX = 352.5 + (47.5 - tQtyWidth) / 2;      // X position for total order number.
+    const tNetWidth = invoice_document.widthOfString("$" + totalNet.toFixed(2).toString());
+    const tNetX = 495 + (95 - tNetWidth) / 2;          // X position for total shipped number.
+
+    // Print totals.
+    invoice_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor('black')
+        .text(`TOTAL: `, 352.5 - invoice_document.widthOfString(`TOTAL: `), 708)
+    invoice_document.font('Helvetica')
+        .text(`${totalQty.toString()}`, tQtyX, 708)
+        .text("$" + totalNet.toFixed(2), tNetX, 708, { width: tNetWidth });
+
+    // Print thank you message.
+    invoice_document.font('Helvetica')
+        .fontSize(12)
+        .fillColor(`black`)
+        .text("Thank you for choosing Chris' Private Parts!",
+            (pageWidth - invoice_document.widthOfString("Thank you for choosing Chris' Private Parts!")) / 2, 750);
+
+    // Return margins back to normal.
+    invoice_document.page.argins = margins;
 
     response.writeHead(200, {
         'Content-Type': 'application/pdf',
@@ -150,7 +255,7 @@ app.get('/api/packlist/:pid', (request, response) => {
     const orderInfo = {
         customerid: "1",
         date: "4/8/2024",
-        ordernum: "123456"
+        ordernum: request.params.pid
     };
 
     // Set up SHIP TO information (you can fetch this from the database or request parameters).
@@ -172,6 +277,11 @@ app.get('/api/packlist/:pid', (request, response) => {
         zip: "60538",
         phone: "3314258243"
     };
+
+
+
+
+
 
     // Company name.
     packlist_document.font('Helvetica-Bold')
@@ -299,7 +409,7 @@ app.get('/api/packlist/:pid', (request, response) => {
         .text(`DESCRIPTION`, 227, 210)
         .text(`ORDER QTY`, 410, 210)
         .text(`SHIP QTY`, 515, 210, { width: 95 });
-    drawPackTable(packlist_document, 20, 25, 225);
+    drawTable(packlist_document, 20, 25, 225);
 
     // Insert parts onto table.
     const tableStartY = 230; // Adjust this value as needed.
@@ -378,25 +488,6 @@ app.get('/api/packlist/:pid', (request, response) => {
 
 });
 
-// Function to draw table for packing list.
-function drawPackTable(doc, rows, startX, startY) {
-    let currentX = startX;
-    let currentY = startY;
-
-    for (let i = 0; i < rows; ++i) {
-        doc.rect(currentX, currentY, 115, 20)
-            .stroke();
-        doc.rect(currentX + 115, currentY, 260, 20)
-            .stroke();
-        doc.rect(currentX + 375, currentY, 95, 20)
-            .stroke();
-        doc.rect(currentX + 470, currentY, 95, 20)
-            .stroke();
-
-        currentY += 20;
-    }
-}
-
 app.get('/api/shiplabel/:slabel', (request, response) => {
 
     // The shipping label is of size-A9.
@@ -454,3 +545,61 @@ app.use(handler);
 app.listen(port, () => {
     console.log("Server is running on localhost:" + port);
 });
+
+// --- Helper Function Definitions ---------------------------------------------
+
+// --- Draw Table --------------------------------------------------------------
+//
+// Function to draw table.
+//
+// doc    :  Name of the document.
+// rows   :  Number of rows to insert.
+// startX :  X-coordinate of the top left position.
+// startY :  Y-coordinate of the top left position.
+//
+function drawTable(doc, rows, startX, startY) {
+    let currentX = startX;
+    let currentY = startY;
+
+    for (let i = 0; i < rows; ++i) {
+        doc.rect(currentX, currentY, 115, 20)
+            .stroke();
+        doc.rect(currentX + 115, currentY, 260, 20)
+            .stroke();
+        doc.rect(currentX + 375, currentY, 95, 20)
+            .stroke();
+        doc.rect(currentX + 470, currentY, 95, 20)
+            .stroke();
+
+        currentY += 20;
+    }
+}
+
+// --- Draw Invoice Table ------------------------------------------------------
+//
+// Function to draw the invoice table.
+//
+// doc    :  Name of the document.
+// rows   :  Number of rows to insert.
+// startX :  X-coordinate of the top left position.
+// startY :  Y-coordinate of the top left position.
+//
+function drawInvoiceTable(doc, rows, startX, startY) {
+    let currentX = startX;
+    let currentY = startY;
+
+    for (let i = 0; i < rows; ++i) {
+        doc.rect(currentX, currentY, 115, 20)
+            .stroke();
+        doc.rect(currentX + 115, currentY, 212.5, 20)
+            .stroke();
+        doc.rect(currentX + 327.5, currentY, 47.5, 20)
+            .stroke();
+        doc.rect(currentX + 375, currentY, 95, 20)
+            .stroke();
+        doc.rect(currentX + 470, currentY, 95, 20)
+            .stroke();
+
+        currentY += 20;
+    }
+}
