@@ -286,6 +286,8 @@ app.get('/api/packlist/:pid', (request, response) => {
     // Variables to hold total quantity ordered and shipped.
     let totalOrdered = 0;
     let totalShipped = 0;
+    let orderWeight = 0;
+    let shipWeight = 0;
 
     // Draw parts table.
     packlist_document.rect(25, 205, 565, 20)
@@ -309,6 +311,8 @@ app.get('/api/packlist/:pid', (request, response) => {
     packlistInfo.items.forEach((item, index) => {
         totalOrdered += item.orderqty;
         totalShipped += item.shipqty;
+        orderWeight += item.orderqty * item.weight;
+        shipWeight += item.shipqty * item.weight;
 
         const rowY = tableStartY + (index) * 20; // Adjust 20 for row height.
 
@@ -338,6 +342,29 @@ app.get('/api/packlist/:pid', (request, response) => {
     packlist_document.font('Helvetica')
         .text(`${totalOrdered.toString()}`, tOrderX, 630)
         .text(`${totalShipped.toString()}`, tShippedX, 630, { width: tShippedWidth });
+
+    // Weight detail box.
+    packlist_document.rect(185, 650, 230, 20)
+        .fill(`#4e5180`);
+    packlist_document.rect(185, 670, 115, 20)
+        .stroke();
+    packlist_document.rect(300, 670, 115, 20)
+        .stroke();
+    packlist_document.font('Helvetica-Bold')
+        .fontSize(12)
+        .fillColor('white')
+        .text(`ORDER WEIGHT`, 185 + (115 - packlist_document.widthOfString(`ORDER WEIGHT`)) / 2, 656.5)
+        .text(`SHIP WEIGHT`, 300 + (115 - packlist_document.widthOfString(`SHIP WEIGHT`)) / 2, 656.5);
+
+    // Write total weights.
+    packlist_document.font('Helvetica')
+        .fontSize(12)
+        .fillColor('black')
+        .text(`${orderWeight.toString()} lbs`, 185 + (115 - (packlist_document.widthOfString(orderWeight.toString() + ` lbs`))) / 2, 676)
+        .text(`${shipWeight.toString()} lbs`, 300 + (115 - (packlist_document.widthOfString(shipWeight.toString() + ` lbs`))) / 2, 676);
+
+    // Our amazing QR code.
+    packlist_document.image(`static/qrcode1.png`, 515, 705, { scale: 0.5 });
 
     //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
