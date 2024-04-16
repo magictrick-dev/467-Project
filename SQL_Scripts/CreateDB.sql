@@ -17,71 +17,73 @@
 
 # Delete tables if they alredy exist.
 
-DROP TABLE IF EXISTS Orders;
-DROP TABLE IF EXISTS Cart;
+DROP TABLE IF EXISTS Purchase;
+DROP TABLE IF EXISTS LineItem;
 DROP TABLE IF EXISTS Customer;
 DROP TABLE IF EXISTS Warehouse;
 DROP TABLE IF EXISTS WeightTable;
 
 
+
 CREATE TABLE Customer (
     ID INT(9) PRIMARY KEY AUTO_INCREMENT,
-    CustomerName VARCHAR(50) NOT NULL,
-    EmailAddress VARCHAR(60) NOT NULL,
-    Country VARCHAR(50) NOT NULL,
-    City VARCHAR(50) NOT NULL,
-    State_ VARCHAR(50) NOT NULL,
-    PostalCode VARCHAR(5) NOT NULL,
-    AddressLine1 VARCHAR(99) NOT NULL,
-    AddressLine2 VARCHAR(99) 
-);
-
-
-
-CREATE TABLE Warehouse (
-    PartNumber INT(9) PRIMARY KEY AUTO_INCREMENT,
-    Quantity INT NOT NULL  
+    first_name VARCHAR(50),
+    email VARCHAR(60),
+    country VARCHAR(50),
+    city VARCHAR(50),
+    customer_state VARCHAR(50),
+    postal_code VARCHAR(5),
+    Address_line1 VARCHAR(99),
+    Address_line2 VARCHAR(99) 
 );
 
 
 
 CREATE TABLE WeightTable (
-    WeightBracket INT PRIMARY KEY NOT NULL,
-    ShippingPrice INT NOT NULL
+    ID INT(9) PRIMARY KEY NOT NULL,
+    weight_catagory int(5) NOT NULL, 
+    price INT(7) NOT NULL
 );
 
 
 
-CREATE TABLE Cart (
-    ID INT(9) PRIMARY KEY AUTO_INCREMENT,
-    QuantitySelected INT(2),
-    Price INT(9) NOT NULL, 
-    CustomerID INT(9) NOT NULL,
-    WeightBracket INT(2) NOT NULL,
-    FOREIGN KEY (CustomerID) REFERENCES Customer(ID),
-    FOREIGN KEY (WeightBracket) REFERENCES WeightTable(WeightBracket)          
+CREATE TABLE Warehouse (
+    ID INT(9) PRIMARY KEY,
+    quantity INT(7) NOT NULL  
 );
 
 
 
-CREATE TABLE Orders (
-    TransactionID INT(9),
-    Authorization INT(9) NOT NULL,
-    OrderStatus VARCHAR(99),
+CREATE TABLE LineItem (
+    ID INT(9) NOT NULL,
+    part_number INT(9) NOT NULL,
+    quantity INT(7),
+    PRIMARY KEY (ID, part_number),
+
+    FOREIGN KEY (part_number) REFERENCES Warehouse(ID)
+);
+
+
+
+CREATE TABLE Purchase (
+    transaction_ID INT(9) NOT NULL,
+    customer_ID INT(9) NOT NULL,
+    bracket_ID INT(9) NOT NULL,
+    authorization_code INT(9),
+    order_status VARCHAR(99),
     DateAndTime DATETIME NOT NULL DEFAULT now(),
-    CustomerID INT(9) NOT NULL,
-    PurchaseID INT(9) NOT NULL,
-    PRIMARY KEY (TransactionID, CustomerID, PurchaseID),
+    PRIMARY KEY (transaction_ID, customer_ID, bracket_ID),
     
-    FOREIGN KEY (TransactionID) REFERENCES Cart(ID),
-    FOREIGN KEY (CustomerID) REFERENCES Customer(ID),
-    FOREIGN KEY (PurchaseID) REFERENCES Cart(ID)
+    FOREIGN KEY (transaction_ID) REFERENCES LineItem(ID),
+    FOREIGN KEY (customer_ID) REFERENCES Customer(ID),
+    FOREIGN KEY (bracket_ID) REFERENCES WeightTable(ID)
 );
+
 
 
 
 DESCRIBE Customer;
-DESCRIBE Warehouse;
 DESCRIBE WeightTable;
-DESCRIBE Cart;
-DESCRIBE Orders;
+DESCRIBE Warehouse;
+DESCRIBE LineItem;
+DESCRIBE Purchase;
