@@ -12,6 +12,7 @@ import cors         from 'cors';
 import { handler }  from './build/handler.js';
 import dbman        from './server/databases.js';
 import pdfkit       from 'pdfkit';
+import { send } from './node_modules/vite/dist/node/index.js';
 
 const test_database = null;
 const port          = 9001;
@@ -475,8 +476,6 @@ app.get('/api/packlist/:pid', (request, response) => {
 
     // Our amazing QR code.
     packlist_document.image(`static/qrcode1.png`, 515, 705, { scale: 0.5 });
-
-    //packlist_document.text(`Here is the packlist: ${request.params.pid}`, 50, 50);
     
     response.writeHead(200, {
         'Content-Type': 'application/pdf',
@@ -490,10 +489,140 @@ app.get('/api/packlist/:pid', (request, response) => {
 
 app.get('/api/shiplabel/:slabel', (request, response) => {
 
-    // The shipping label is of size-A9.
-    let shiplabel = new pdfkit({ size: 'A9' });
-    shiplabel.text(`Here is the shipping label: ${request.params.slabel}`, 100, 100);
-    
+    // The shipping label is 4" x 6".
+    let shiplabel = new pdfkit({ size: [4 * 72, 6 * 72] }); // 1 ich = 72 points.
+
+    const sender = {
+        name: `Chris' Private Parts`,
+        address: `1234 CPP Drive`,
+        city: `Dekalb`,
+        state: `IL`,
+        postalCode: `60115`
+    }
+
+    // Recipient information.
+    const recipient = {
+        name: 'Ryan Solfisburg',
+        addressLine1: '1110 Varsity Blvd',
+        addressLine2: 'Apt 220',
+        city: 'Dekalb',
+        state: 'IL',
+        postalCode: '60115',
+    };
+
+    // Shipping weight information.
+    const packageInfo = {
+        trackingNumber: request.params.slabel, // Assuming the tracking number is passed as a parameter
+        weight: 999,
+        routingNumber: '9405 5112 9837 0132 0951 98'
+    };
+
+    // Width of page.
+    const pageWidth = shiplabel.page.width;
+    const pageHeight = shiplabel.page.height;
+
+    // What I have to do to write things in the margins.
+    shiplabel.page.margins = {             // Remove margin.
+        top: 0,
+        right: 0,
+        left: 0,
+        bottom: 0
+    };
+
+    // Shipping Header.
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(55)
+        .text(`P`, 10, 10);
+
+    // Line Delimiter.
+    shiplabel.moveTo(0, 60)
+        .lineTo(pageWidth, 60)
+        .stroke();
+    shiplabel.moveTo(shiplabel.widthOfString(`P`) + 20, 60)
+        .lineTo(shiplabel.widthOfString(`P`) + 20, 0)
+        .stroke();
+
+    // Name of Company.
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(20)
+        .text(`CHRIS'`, 60, 2)
+        .fontSize(16)
+        .text(`PRIVATE SHIPPING`, 60, 24);
+
+    // Weight of package.
+    shiplabel.font('Helvetica')
+        .fontSize(10)
+        .text(`WEIGHT: `, 60, 48);
+    shiplabel.font('Helvetica')
+        .fontSize(10)
+        .text(`${packageInfo.weight.toFixed(2)} lbs`, shiplabel.widthOfString(`WEIGHT: `) + 60, 48);
+
+    // Shipping type.
+    const shipTWidth = shiplabel.widthOfString(`PRIORITY MAIL 2-DAY`);
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(14)
+        .text(`PRIORITY MAIL 2-DAY`, ((pageWidth - shipTWidth) / 2) - 20, 69);
+
+    // Line Delimiter.
+    shiplabel.moveTo(0, 90)
+        .lineTo(pageWidth, 90)
+        .stroke();
+
+    // From Label.
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(12)
+        .text(`FROM:`, 3, 93);
+    // From Label Information.
+    shiplabel.font('Helvetica')
+        .fontSize(10)
+        .text(`${sender.name}`, 5, 106)
+        .text(`${sender.address}`, 5, 118)
+        .text(`${sender.city}, ${sender.state} ${sender.postalCode}`, 5, 130);
+
+    // Ship To Label.
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(14)
+        .text(`SHIP`, 10, 150)
+        .text(`TO:`, 10, 165);
+
+    // Ship To Label Information.
+    let addressY = 194; 
+
+    shiplabel.font('Helvetica')
+        .fontSize(20)
+        .text(`${recipient.name}`, 65, 150)
+        .text(`${recipient.addressLine1}`, 65, 172);
+    if (recipient.addressLine2 != ``) { 
+        shiplabel.text(`${recipient.addressLine2}`, 65, addressY);
+        addressY += 22;
+    }
+    shiplabel.text(`${ recipient.city }, ${ recipient.state } ${ recipient.postalCode }`, 65, addressY)
+
+    // Line Delimiter Thick.
+    shiplabel.moveTo(0, 280)
+        .lineWidth(3)
+        .lineTo(pageWidth, 280)
+        .stroke();
+
+    // Draw tracking number
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(14)
+        .text(`Tracking Number: ${packageInfo.trackingNumber}`, ((pageWidth - shiplabel.widthOfString(`Tracking Number: ` + packageInfo.trackingNumber)) / 2), 300);
+
+    // Barcode.
+    shiplabel.image(`static/barcode.png`, 3.5, 320, { scale: 0.5 });
+
+    // Routing Number.
+    shiplabel.font('Helvetica-Bold')
+        .fontSize(14)
+        .text(`${packageInfo.routingNumber}`, (pageWidth - shiplabel.widthOfString(packageInfo.routingNumber)) / 2, 395);
+
+    // Line Delimiter Thick
+    shiplabel.moveTo(0, pageHeight - 2)
+        .lineWidth(3)
+        .lineTo(pageWidth, pageHeight - 2)
+        .stroke();
+
     response.writeHead(200, {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment;filename=shipping_label.pdf',
