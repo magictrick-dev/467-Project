@@ -35,39 +35,37 @@
 </svelte:head>
 
 <section>
-  <div class="container bd-gutter my-3 bd-layout">
-    <ul class="list-group p-2">
-      {#each products as _, i}
-        <li class="list-group-item">
-          <div class="d-flex justify-content-between">
-            <div class="p-1">
-              {products[i]}
-              <p>
-                Amount: {amount[i]}
-              </p>
-            </div>
-            ${(cost[i]*amount[i]).toFixed(2)}
+  <ul class="list-group p-2">
+    {#each products as _, i}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div class="p-1">
+            {products[i]}
+            <p>
+              Amount: {amount[i]}
+            </p>
           </div>
-        </li>
-      {/each}
-    </ul>
-    <div class="d-flex justify-content-end">
-      <div class="d-flex justify-content-between" style="width: 300px;">
-        <div class="p-2">Subtotal:</div>
-        <div class="p-2">${subtotal}</div>
-      </div>
+          ${(cost[i]*amount[i]).toFixed(2)}
+        </div>
+      </li>
+    {/each}
+  </ul>
+  <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-between" style="width: 300px;">
+      <div class="p-2">Subtotal:</div>
+      <div class="p-2">${subtotal}</div>
     </div>
-    <div class="d-flex justify-content-end">
-      <div class="d-flex justify-content-between" style="width: 300px;">
-        <div class="p-2">Shipping:</div>
-        <div class="p-2">${shipping}</div>
-      </div>
+  </div>
+  <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-between" style="width: 300px;">
+      <div class="p-2">Shipping:</div>
+      <div class="p-2">${shipping}</div>
     </div>
-    <div class="d-flex justify-content-end">
-      <div class="d-flex justify-content-between" style="width: 300px;">
-        <div class="p-2">Total:</div>
-        <div class="p-2">${subtotal+shipping}</div>
-      </div>
+  </div>
+  <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-between" style="width: 300px;">
+      <div class="p-2">Total:</div>
+      <div class="p-2">${subtotal+shipping}</div>
     </div>
   </div>
 </section>

@@ -1,4 +1,4 @@
-import { products } from './data.js';
+import { products } from '$lib/data.js';
 
 export function load() {
 	return {
