@@ -490,7 +490,7 @@ app.get('/api/packlist/:pid', (request, response) => {
 app.get('/api/shiplabel/:slabel', (request, response) => {
 
     // The shipping label is 4" x 6".
-    let shiplabel = new pdfkit({ size: [4 * 72, 6 * 72] }); // 1 ich = 72 points.
+    let shiplabel = new pdfkit({ size: [4 * 72, 6 * 72] }); // 1 inch = 72 points.
 
     const sender = {
         name: `Chris' Private Parts`,
@@ -516,6 +516,10 @@ app.get('/api/shiplabel/:slabel', (request, response) => {
         weight: 999,
         routingNumber: '9405 5112 9837 0132 0951 98'
     };
+
+
+
+
 
     // Width of page.
     const pageWidth = shiplabel.page.width;
@@ -604,7 +608,7 @@ app.get('/api/shiplabel/:slabel', (request, response) => {
         .lineTo(pageWidth, 280)
         .stroke();
 
-    // Draw tracking number
+    // Draw tracking number.
     shiplabel.font('Helvetica-Bold')
         .fontSize(14)
         .text(`Tracking Number: ${packageInfo.trackingNumber}`, ((pageWidth - shiplabel.widthOfString(`Tracking Number: ` + packageInfo.trackingNumber)) / 2), 300);
@@ -617,7 +621,7 @@ app.get('/api/shiplabel/:slabel', (request, response) => {
         .fontSize(14)
         .text(`${packageInfo.routingNumber}`, (pageWidth - shiplabel.widthOfString(packageInfo.routingNumber)) / 2, 395);
 
-    // Line Delimiter Thick
+    // Line Delimiter Thick.
     shiplabel.moveTo(0, pageHeight - 2)
         .lineWidth(3)
         .lineTo(pageWidth, pageHeight - 2)
