@@ -28,11 +28,12 @@ DROP TABLE IF EXISTS WeightTable;
 CREATE TABLE Customer (
     ID INT(9) PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50),
+    last_name VARCHAR(50),
     email VARCHAR(60),
     country VARCHAR(50),
     city VARCHAR(50),
     customer_state VARCHAR(50),
-    postal_code VARCHAR(5),
+    postal_code VARCHAR(10),
     Address_line1 VARCHAR(99),
     Address_line2 VARCHAR(99) 
 );
@@ -82,8 +83,20 @@ CREATE TABLE Purchase (
 
 
 
-DESCRIBE Customer;
-DESCRIBE WeightTable;
-DESCRIBE Warehouse;
-DESCRIBE LineItem;
-DESCRIBE Purchase;
+#DESCRIBE Customer;
+#DESCRIBE WeightTable;
+#DESCRIBE Warehouse;
+#DESCRIBE LineItem;
+#DESCRIBE Purchase;
+
+
+
+\. Customer.sql
+\. WeightTable.sql
+\. Warehouse.sql
+
+
+
+SELECT * FROM Customer;
+SELECT * FROM WeightTable;
+SELECT * FROM Warehouse;
