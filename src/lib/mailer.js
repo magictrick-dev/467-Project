@@ -16,12 +16,79 @@ send_invoice(to)
         }
     });
 
+    // Customer order information.
+    const orderInfo = {
+        name: "Ryan Solfisburg",
+        receiptNum: "1421",
+        trackingLink: "https://www.youtube.com/watch?v=GmG4X9PGOXs",
+        items: [
+            { itemnum: "4215", description: "Product 1", quantity: 1, price: 5000 },
+            { itemnum: "45-A421E", description: "Product 2", quantity: 2, price: 25 },
+            { itemnum: "", description: "Product 3", quantity: 5, price: 2.99 }
+            // Add more items as needed.
+        ]
+    }
+
+
+
+
+
+
+    // Total Price.
+    let totalPrice = 0;
+
+    // Order Items.
+    const itemsHTML = orderInfo.items.map(item => {
+        totalPrice += (item.quantity * item.price);
+        return `
+            <tr>
+              <td>${item.description}</td>
+              <td class="text-right">$${(item.quantity * item.price).toFixed(2)}</td>
+            </tr>`;
+    }).join('');
+
+    // Total Price Row.
+    const totalRow = `
+        <tr>
+            <td class="fw-700 border-top">Amount paid</td>
+            <td class="fw-700 text-right border-top">$${totalPrice.toFixed(2)}</td>
+        </tr>`;
+
+
+    // HTML Content
+    var htmlContent = `
+        <body style="background-color: #ebf8ff;">
+            <div style="margin: 0 auto; max-width: 600px; padding: 20px;">
+                <br></br>
+                <div style="margin-bottom: 24px;">
+                    <h1 style="font-size: 2.25rem; font-weight: 800;">Thanks for your order,<br>
+                    ${orderInfo.name}!</h1>
+                    <p style="margin-top: 16px;">The estimated delivery time for your order is 2-3 business days.<br>
+                    Track your order on the Chris' Private Part website.</p>
+                    <a href="${orderInfo.trackingLink}" style="display: inline-block; background-color: #3b82f6; color: #fff; border-radius: 9999px; padding: 12px 24px; width: 100%; max-width: 155px; text-align: center; text-decoration: none; margin-top: 16px;">Track Your Order</a>
+                </div>
+                <div style="border-radius: 1.5rem; padding: 16px; margin-bottom: 24px; background-color: #fff;">
+                    <h3 style="text-align: center; margin-bottom: 16px;">Receipt from Chris' Private Parts</h3>
+                    <p style="text-align: center; color: #6b7280; margin-bottom: 8px;">Receipt #${orderInfo.receiptNum}</p>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tbody>
+                            ${itemsHTML}
+                            <tr style="height: 20px;"><td colspan="2"></td></tr> <!-- Empty row for spacing -->
+                            ${totalRow}
+                        </tbody>
+                    </table>
+                    <hr style="margin: 24px 0; border: none; border-top: 1px solid #d1d5db;">
+                    <p style="margin-bottom: 0;">If you have any questions, contact us at questions@chrisprivateparts.com.</p>
+                </div>
+            </div>
+        </body>`;
+
     // Format the email.
     var mailOptions = {
         from: 'niucsci467project24@gmail.com',
         to: to,
-        subject: 'Sending Email using Node.js',
-        text: 'Hello, from the CSCI 467 project. Here is the invoice.'
+        subject: `Your Chris' Private Parts order`,
+        html: htmlContent
     };
 
     // Send it.
@@ -36,7 +103,7 @@ send_invoice(to)
 }
 
 export async function
-send_confirmation()
+send_confirmation(to)
 {
 
     // Create the transporter.
@@ -48,12 +115,58 @@ send_confirmation()
         }
     });
 
+    // Customer order information.
+    const orderInfo = {
+        name: "Chris Dejong",
+        city: "Dekalb",
+        state: "Illinois",
+        trackingLink: "https://www.youtube.com/watch?v=5PsnxDQvQpw",
+        orderNum: "214521",
+        shipmentTotal: 42.3
+    }
+
+
+
+
+
+
+    // HTML Content
+    var htmlContent = `
+        <body style="background-color: #ebf8ff;">
+            <div style="margin: 0 auto; max-width: 600px; padding: 20px;">
+                <br></br>
+                <div style="margin-bottom: 24px;">
+                    <h1 style="font-size: 2.25rem; font-weight: 800;">Hello, ${orderInfo.name}!<br>
+                    Your order has shipped!</h1>
+                    <p style="margin-top: 16px;">The estimated delivery time for your order is 2-3 business days.<br>
+                    Track your order on the Chris' Private Part website.</p>
+                    <a href="${orderInfo.trackingLink}" style="display: inline-block; background-color: #3b82f6; color: #fff; border-radius: 9999px; padding: 12px 24px; width: 100%; max-width: 155px; text-align: center; text-decoration: none; margin-top: 16px;">Track Your Order</a>
+                </div>
+                <div style="border-radius: 1.5rem; padding: 16px; margin-bottom: 24px; background-color: #fff;">
+                    <h3 style="text-align: center; margin-bottom: 16px; font-size: 1.50rem;">Shipping Confirmation</h3>
+                    <p style="text-align: left; color: #6b7280; margin-bottom: 8px;">Ship to</p>
+                    <p style="text-align: left; font-weight: 500; font-size: 1.25rem; margin-bottom: 12px;">${orderInfo.name}<br>
+                    ${orderInfo.city}, ${orderInfo.state}</p>
+                    <p style="text-align: left; color: #6b7280; margin-bottom: 8px;">Order #</p>
+                    <p style="text-align: left; font-weight: 500; font-size: 1.25rem; margin-bottom: 12px;">${orderInfo.orderNum}</p>
+                    <br>
+                    <!-- Shipment total box -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; background-color: #f3f4f6; padding: 6px;">
+                        <p style="font-weight: 500; font-size: 1.25rem;">Shipment total</p>
+                        <p style="font-weight: 500; font-size: 1.25rem;">$${orderInfo.shipmentTotal.toFixed(2)}</p>
+                    </div>
+                    <hr style="margin: 24px 0; border: none; border-top: 1px solid #d1d5db;">
+                    <p style="margin-bottom: 0;">If you have any questions, contact us at questions@chrisprivateparts.com.</p>
+                </div>
+            </div>
+        </body>`;
+
     // Format the email.
     var mailOptions = {
         from: 'niucsci467project24@gmail.com',
         to: to,
-        subject: 'Sending Email using Node.js',
-        text: 'Hello, from the CSCI 467 project. Here is the shipping confirmation.'
+        subject: `Your Chris' Private Parts order has shipped (#${orderInfo.orderNum})`,
+        html: htmlContent
     };
 
     // Send it.
