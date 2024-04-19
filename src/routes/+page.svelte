@@ -1,4 +1,5 @@
 <script>
+  export let data;
 </script>
 
 <svelte:head>
@@ -7,16 +8,25 @@
 </svelte:head>
 
 <section>
-    <nav class="navbar bg-black text-light">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <img src="https://getbootstrap.com/docs/5.3/assets/brand/bootstrap-logo.svg" alt="Bootstrap" width="30" height="24">
-            </a>
-            <h7>admissions@niu.edu</h7>
-            <h7>815-753-0446</h7>
-        </div>
-    </nav>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {#each data.summaries as { slug, title, description }, num}
+      <div class="col">
+        <a href="/{slug}">
+          <div class="card">
+            <img src="./test.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{title}</h5>
+              <p class="card-text text-truncate">{description}</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    {/each}
+  </div>
 </section>
 
 <style>
+  .row {
+    margin: 20px;
+  }
 </style>
