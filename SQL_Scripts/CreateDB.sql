@@ -94,9 +94,13 @@ CREATE TABLE Purchase (
 \. Customer.sql
 \. WeightTable.sql
 \. Warehouse.sql
+\. LineItem.sql
+\. Purchase.sql
 
 
 
 SELECT * FROM Customer;
 SELECT * FROM WeightTable;
 SELECT * FROM Warehouse;
+SELECT * FROM LineItem;
+SELECT * FROM Purchase;
