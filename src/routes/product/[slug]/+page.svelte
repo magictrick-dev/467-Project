@@ -27,7 +27,9 @@
       </div>
     </div>
     <div class="d-flex justify-content-end p-2">
-      <button class="btn btn-secondary" on:click={addItem}>Add to Cart</button>
+      <form method="POST">
+        <button class="btn btn-secondary" type="cart" value="{data.product_listing.number}">Add to Cart</button>
+      </form>
     </div>
   </section>
 </div>

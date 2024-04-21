@@ -1,16 +1,15 @@
 import { set_connection } from "$lib/legacydb.js";
+import * as helpers from "$lib/helpers.js";
+
+export const actions = {
+	default: async (request) => {
+		console.log(request.params);
+        let current_cart = request.cookies.get("cart");
+        let cart_body = helpers.cart_body();
+	}
+};
 
 export async function load({ params }) {
-
-/*
-	return {
-		summaries: products.map((product) => ({
-			slug: product.slug,
-			title: product.title,
-			description: product.content
-		}))
-	};
-*/
 
     // Establish the connection.
     let connection = await set_connection();

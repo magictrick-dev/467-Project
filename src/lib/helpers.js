@@ -1,4 +1,11 @@
 
+export function cart_body()
+{
+  return {
+    items: []
+  }
+}
+
 // 'cause they weren't pretty from the factory...
 export function to_pretty(input)
 {
