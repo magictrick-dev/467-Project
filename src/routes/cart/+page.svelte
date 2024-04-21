@@ -36,36 +36,39 @@
 	<meta name="description" content="Cart" />
 </svelte:head>
 
-<section>
-  <ul class="list-group p-2">
-    {#each products as _, i}
-      <li class="list-group-item">
-        <div class="d-flex justify-content-between">
-          <div class="p-2">
-            {products[i]}
-            <input type="number" bind:value={amount[i]} min="0" max="100"/>
-            <button class="btn btn-secondary btn-sm" id={i} on:click={clear}>
-              remove item
-            </button>
+<div class="container-md">
+  <section>
+    <ul class="list-group p-2">
+      {#each products as _, i}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <div class="p-2">
+              {products[i]}
+              <input type="number" bind:value={amount[i]} min="0" max="100"/>
+              <button class="btn btn-secondary btn-sm" id={i} on:click={clear}>
+                remove item
+              </button>
+            </div>
+            ${(cost[i]*amount[i]).toFixed(2)}
           </div>
-          ${(cost[i]*amount[i]).toFixed(2)}
-        </div>
-      </li>
-    {/each}
-  </ul>
-  <div class="d-flex justify-content-end p-2">
-    <button class="btn btn-secondary" on:click={calcSubtotal}>Get Subtotal</button>
-  </div>
-  <div class="d-flex justify-content-end">
-    <div class="d-flex justify-content-between" style="width: 300px;">
-      <div class="p-2">Subtotal:</div>
-      <div class="p-2">${subtotal}</div>
+        </li>
+      {/each}
+    </ul>
+    <div class="d-flex justify-content-end p-2">
+      <button class="btn btn-secondary" on:click={calcSubtotal}>Get Subtotal</button>
     </div>
-  </div>
-  <div class="d-flex justify-content-end p-2">
-    <a class="btn btn-secondary" href="../checkout" role="button">Checkout</a>
-  </div>
-</section>
+    <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-between" style="width: 300px;">
+        <div class="p-2">Subtotal:</div>
+        <div class="p-2">${subtotal}</div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end p-2">
+      <a class="btn btn-secondary" href="../checkout" role="button">Checkout</a>
+    </div>
+  </section>
+</div>
+
 
 <style>
 </style>

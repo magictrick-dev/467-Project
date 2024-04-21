@@ -1,6 +1,6 @@
 import { set_connection } from "$lib/legacydb.js";
 
-export async function load() {
+export async function load({ params }) {
 
 /*
 	return {
@@ -21,14 +21,14 @@ export async function load() {
         
         // Some magic happens here, idk.
         let results = await connection
-            .query("SELECT * FROM parts")
+            .query(`SELECT * FROM parts WHERE number = '${params.slug}'`)
             .then(([rows, fields]) => { return rows; });
 
 		//console.log(results);
 
         // Send the data back.
         return {
-			product_listing: results
+			product_listing: results[0]
 		}
 
     }
