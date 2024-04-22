@@ -80,19 +80,51 @@ export async function load({ cookies }) {
 }
 
 export const actions = {
-  ordersend: async (request) => {
+  update: async (request) => {
     const form_data = await request.request.formData();
-    console.log(form_data);
+
+    let item_number = form_data.get("item");
+    let item_qty = form_data.get("qty");
 
     // Get the existing cart.
     let current_cart = request.cookies.get("cart");
-    if ((current_cart == null || current_cart == ""))
-    {
-      redirect(301, "/");
-    }
+    let cart_body = helpers.cart_body();
 
-    let cart = JSON.parse(current_cart);
-    console.log(cart);
+    if (!(current_cart == null || current_cart == ""))
+    {
+      let cookie_cart = JSON.parse(current_cart);
+      cookie_cart.items.forEach((item) => {
+        //cart_body.items.push(item);
+        if (item.item == item_number)
+        {
+          if (Number(item_qty) > 0)
+          {
+            item.qty = Number(item_qty);
+            cart_body.items.push(item);
+          }
+
+        }
+        else
+        {
+          cart_body.items.push(item);
+        }
+      });
+
+      if (cart_body.items.length == 0)
+      {
+        request.cookies.delete("cart", { path: '/' });
+        redirect(301, "/cart");
+      }
+      else
+      {
+        let cookie_string = JSON.stringify(cart_body);
+        console.log(cookie_string);
+        request.cookies.set("cart", cookie_string, {path: '/'});
+        redirect(301, "/cart");
+      }
+
+
+    }
 
   }
 };

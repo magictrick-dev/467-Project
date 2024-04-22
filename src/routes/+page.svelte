@@ -32,9 +32,13 @@
 	<meta name="description" content="Homepage" />
 </svelte:head>
 
-<div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+<div class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
+      <img style="object-fit: cover; width: 100%" height="650px"
+        src="https://hips.hearstapps.com/hmg-prod/images/2025-porsche-911-spied-front-658200b0a3a5d.jpg" class="d-block" alt="...">
+    </div>
+    <div class="carousel-item">
       <img style="object-fit: cover; width: 100%" height="650px"
         src="https://hips.hearstapps.com/hmg-prod/images/2022-ford-mustang-shelby-gt500-02-1636734552.jpg" class="d-block" alt="...">
     </div>
@@ -42,23 +46,19 @@
       <img style="object-fit: cover; width: 100%" height="650px"
         src="https://upload.wikimedia.org/wikipedia/commons/3/3d/2018-Chevrolet-Camaro-ZL1-1LE-001-01.jpg" class="d-block" alt="...">
     </div>
-    <div class="carousel-item">
-      <img style="object-fit: cover; width: 100%" height="650px"
-        src="https://hips.hearstapps.com/hmg-prod/images/2025-porsche-911-spied-front-658200b0a3a5d.jpg" class="d-block" alt="...">
-    </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
   </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+  <button id="prodtop" class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Next</span>
   </button>
 </div>
 
 <div class="container-md">
-
+  <div class="container-fluid bg-white mt-3 mb-3" style="border-radius: 12px; padding-top: 10px; padding-bottom: 10px">
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {#each selection as product }
       <div class="col">
@@ -82,39 +82,40 @@
       <ul class="pagination">
         {#if current_page == 0}
           <li class="page-item disabled">
-            <a class="page-link" href="#">Previous</a>
+            <a class="page-link" href="#prodtop">Previous</a>
           </li>
         {:else}
           <li class="page-item">
-            <a on:click={() => {set_page(current_page-1)}} class="page-link" href="#">Previous</a>
+            <a on:click={() => {set_page(current_page-1)}} class="page-link" href="#prodtop">Previous</a>
           </li>
         {/if}
 
         {#each {length: max_page } as _, i}
           {#if i == current_page}
           <li class="page-item active">
-            <a on:click={() => {set_page(i)}} class="page-link" href="#">{i + 1}</a>
+            <a on:click={() => {set_page(i)}} class="page-link" href="#prodtop">{i + 1}</a>
           </li>
           {:else}
           <li class="page-item">
-            <a on:click={() => {set_page(i)}} class="page-link" href="#">{i + 1}</a>
+            <a on:click={() => {set_page(i)}} class="page-link" href="#prodtop">{i + 1}</a>
           </li>
           {/if}
         {/each}
 
         {#if current_page == max_page - 1}
           <li class="page-item disabled">
-            <a class="page-link" href="#">Next</a>
+            <a class="page-link" href="#prodtop">Next</a>
           </li>
         {:else}
         <li class="page-item">
-          <a on:click={() => {set_page(current_page+1)}} class="page-link" href="#">Next</a>
+          <a on:click={() => {set_page(current_page+1)}} class="page-link" href="#prodtop">Next</a>
         </li>
         {/if}
       </ul>
     </nav>
     
   </div>
+</div>
 </div>
 
 <style>

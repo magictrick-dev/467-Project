@@ -10,11 +10,11 @@
 </div>
 
 <nav class="navbar navbar-expand-lg sticky-md-top" style="backdrop-filter: blur(6px);
-  background-color: rgba(255, 255, 255, 0.90);">
+  background-color: rgba(255, 255, 255, 0.66);">
   <div class="container-md">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
-        <img src="logo.svg" width="60" height="60" alt="">
+        <img src="/logo.svg" width="60" height="60" alt="">
         NIU Automotive Parts
       </a>
       <ul class="navbar-nav">
@@ -22,13 +22,7 @@
           <a class="nav-link active" aria-current="page" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/contact">About Us</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="/cart">Cart</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/checkout">Checkout</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/employee">Employee Portal</a>

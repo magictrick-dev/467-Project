@@ -1,34 +1,26 @@
 <script>
-  let products = [1, 2, 3, 4];
-  let amount = [2, 5, 1, 3];
-  let cost = [4.00, 2.99, 4.50, 5.00];
-  let subtotal = 0;
+  import * as helpers from "$lib/helpers.js";
+  export let data;
 
-  function clear(event) {
-    let temp_prods =[];
-    for(let b in products) {
-      if(b != event.srcElement.getAttribute("id")) {
-        temp_prods.push(products[b]);
-      }
-    }
-    products = temp_prods;
+  let subtotal = 0.00;
+  let subweight = 0;
+  data.items.forEach((product) => {
+    subtotal += (product.qty * product.item.price);
+    subweight += (product.qty * product.item.weight);
+  })
 
-    let temp_amounts =[];
-    for(let b in amount) {
-      if(b != event.srcElement.getAttribute("id")) {
-        temp_amounts.push(amount[b]);
-      }
+  let last_weight_price = data.weights[0].price;
+  let weight_index = data.weights[0].ID;
+  data.weights.forEach((winfo) => {
+    if (subweight >= winfo.weight_maximum)
+    {
+      last_weight_price = winfo.price;
+      weight_index = winfo.ID;
     }
-    amount = temp_amounts;
-  }
+  });
 
-  function calcSubtotal() {
-    subtotal = 0;
-    for(let i in products) {
-      subtotal += amount[i]*cost[i];
-    }
-    return subtotal;
-  }
+  let total = subtotal + last_weight_price;
+
 </script>
 
 <svelte:head>
@@ -37,36 +29,49 @@
 </svelte:head>
 
 <div class="container-md">
+  <div class="container-fluid bg-white mt-3 mb-3" style="border-radius: 12px; padding-top: 10px; padding-bottom: 10px">
   <section>
     <ul class="list-group p-2">
-      {#each products as _, i}
-        <li class="list-group-item">
-          <div class="d-flex justify-content-between">
-            <div class="p-2">
-              {products[i]}
-              <input type="number" bind:value={amount[i]} min="0" max="100"/>
-              <button class="btn btn-secondary btn-sm" id={i} on:click={clear}>
-                remove item
-              </button>
+      {#if data.is_empty != true}
+        {#each data.items as product}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div class="p-2">
+                <strong>{helpers.to_pretty(product.item.description)}</strong><br/>
+                <span>Weight: {product.item.weight} lbs.</span>
+                <form method="POST" action="?/update">
+                  <div class="input-group mb-3">
+                    <input type="number" min="0" class="form-control" placeholder="Quantity" value="{product.qty}" name="qty">
+                    <button class="btn btn-secondary" type="cart" name="item" value="{product.item.number}" id="button-addon1">Update</button>
+                  </div>
+                </form>
+              </div>
+              <div>
+                <strong>Base Price:</strong> ${product.item.price}<br/>
+                <strong>Ext. Price:</strong> ${(product.item.price * product.qty).toFixed(2)}
+              </div>
+
             </div>
-            ${(cost[i]*amount[i]).toFixed(2)}
-          </div>
-        </li>
-      {/each}
+          </li>
+        {/each}
+      {:else}
+         <h3>Your cart is empty!</h3>
+      {/if}
     </ul>
-    <div class="d-flex justify-content-end p-2">
-      <button class="btn btn-secondary" on:click={calcSubtotal}>Get Subtotal</button>
-    </div>
     <div class="d-flex justify-content-end">
       <div class="d-flex justify-content-between" style="width: 300px;">
-        <div class="p-2">Subtotal:</div>
-        <div class="p-2">${subtotal}</div>
+        <div>
+          <div class="p-2">Subtotal: ${subtotal.toFixed(2)}</div>
+          <div class="p-2">Shipping: ${last_weight_price.toFixed(2)}</div>
+          <div class="p-2"><strong>Total:</strong> ${total.toFixed(2)}</div>
+        </div>
       </div>
     </div>
     <div class="d-flex justify-content-end p-2">
       <a class="btn btn-secondary" href="../checkout" role="button">Checkout</a>
     </div>
   </section>
+  </div>
 </div>
 
 
