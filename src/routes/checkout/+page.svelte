@@ -69,6 +69,7 @@
     <div class="container bd-gutter my-3 bd-layout">
       <form class="was-validated p-2" method="POST" action="?/ordersend">
         <input type="hidden" name="weight_class" value="{weight_index}"/> 
+        <input type="hidden" name="order_total" value="{total.toFixed(2)}"/> 
         <h2>Shipping Address</h2>
         <div class="row" style="width: 600px;">
           <div class="col-md-6 mb-2">

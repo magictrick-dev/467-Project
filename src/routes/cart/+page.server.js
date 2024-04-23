@@ -31,9 +31,9 @@ export async function load({ cookies }) {
   
       // Get the existing cart.
       let current_cart = cookies.get("cart");
-
+      console.log(current_cart);
       let cart_items = helpers.cart_body();
-      if (current_cart != null)
+      if (current_cart)
       {
         cart_items = JSON.parse(current_cart);
       }

@@ -4,22 +4,27 @@
 
   let subtotal = 0.00;
   let subweight = 0;
-  data.items.forEach((product) => {
-    subtotal += (product.qty * product.item.price);
-    subweight += (product.qty * product.item.weight);
-  })
+  let last_weight_price = 0.00;
+  let weight_index = 1;
+  let total = 0.00;
+  if (!data.is_empty) {
+    data.items.forEach((product) => {
+      subtotal += (product.qty * product.item.price);
+      subweight += (product.qty * product.item.weight);
+    })
 
-  let last_weight_price = data.weights[0].price;
-  let weight_index = data.weights[0].ID;
-  data.weights.forEach((winfo) => {
-    if (subweight >= winfo.weight_maximum)
-    {
-      last_weight_price = winfo.price;
-      weight_index = winfo.ID;
-    }
-  });
+    last_weight_price = data.weights[0].price;
+    weight_index = data.weights[0].ID;
+    data.weights.forEach((winfo) => {
+      if (subweight >= winfo.weight_maximum)
+      {
+        last_weight_price = winfo.price;
+        weight_index = winfo.ID;
+      }
+    });
 
-  let total = subtotal + last_weight_price;
+    total = subtotal + last_weight_price;
+  }
 
 </script>
 
@@ -32,7 +37,7 @@
   <div class="container-fluid bg-white mt-3 mb-3" style="border-radius: 12px; padding-top: 10px; padding-bottom: 10px">
   <section>
     <ul class="list-group p-2">
-      {#if data.is_empty != true}
+      {#if data.is_empty != true }
         {#each data.items as product}
           <li class="list-group-item">
             <div class="d-flex justify-content-between">

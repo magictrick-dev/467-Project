@@ -145,6 +145,7 @@ async function main()
     let database_instance = new sqlite.Database("./db/projectdb.sl3");
     database_instance.serialize(() => {
         
+        /*
         // Clear all existing tables from the database.
         console.log("Clearing all existing tables.\n")
         database_instance.run("DROP TABLE Customer;", (error) => {
@@ -202,7 +203,6 @@ async function main()
         database_instance.run(customers, (error) => {
             if (error) console.log(error);
         });
-
         database_instance.all("SELECT * FROM Customer;", (error, data) => {
             if (error) console.log(error);
             else
@@ -285,7 +285,23 @@ async function main()
             if (error) console.log(error);
             else console.log(data);
         });
+        */
 
+        database_instance.all("SELECT * FROM Purchase", (error, data) => {
+            console.log(data);
+        });
+
+        let fetch_test = `
+        SELECT * FROM LineItem
+        JOIN Purchase ON Purchase.transaction_ID = LineItem.ID
+        JOIN Customer ON Purchase.Customer_ID = Customer.ID
+        WHERE LineItem.ID = '46c27d7f-0f20-492b-b1b1-44a6ee93788e';
+        `;
+
+        database_instance.all(fetch_test, (error, data) => {
+            console.log(data);
+        });
+    
     });
 
 }

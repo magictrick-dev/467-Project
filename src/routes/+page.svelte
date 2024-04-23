@@ -32,7 +32,7 @@
 	<meta name="description" content="Homepage" />
 </svelte:head>
 
-<div class="carousel slide" data-bs-ride="carousel">
+<div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
       <img style="object-fit: cover; width: 100%" height="650px"
