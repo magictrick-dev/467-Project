@@ -20,12 +20,22 @@
         <button type="button" class="btn btn-primary" on:click={() => {window.open(packlist_path);}}>Get Packlist</button>
         <button type="button" class="btn btn-primary" on:click={() => {window.open(shiplabel_path);}}>Get Shipping Label</button>
         {#if status == "Processing" }
-          <button type="button" class="btn btn-primary">Mark Shipped</button>
-        {:else if status == "Shipped" }
-          <button type="button" class="btn btn-primary">Mark Delivered</button>
+          <form class="form-inline" method="POST" action="?/shipped">
+            <input type="hidden" name="id" value="{context_details.transaction_ID}" />
+            <button type="submit" class="btn btn-primary">Mark Completed</button>
+          </form>
+        {:else if status == "Completed" }
+        <form class="form-inline" method="POST" action="?/delivered">
+          <input type="hidden" name="id" value="{context_details.transaction_ID}" />
+          <button type="submit" class="btn btn-primary">Mark Delivered</button>
+        </form>
         {:else}
          <button type="button" class="btn btn-primary" disabled>Mark Delivered</button>
         {/if}
+        <form class="form-inline" method="POST" action="?/reset">
+          <input type="hidden" name="id" value="{context_details.transaction_ID}" />
+          <button type="submit" class="btn btn-primary">Reset Status</button>
+        </form>
       </section>
 
       <section>
@@ -48,7 +58,7 @@
             <button type="button" class="position-absolute top-0 start-50 translate-middle btn btn-sm btn-secondary rounded-pill" style="width: 2rem; height:2rem;">2</button>
             <button type="button" class="position-absolute top-0 start-100 translate-middle btn btn-sm btn-secondary rounded-pill" style="width: 2rem; height:2rem;">3</button>
           </div>
-        {:else if status == "Shipped"}
+        {:else if status == "Completed"}
           <div class="position-relative m-4">
             <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 1px;">
               <div class="progress-bar" style="width: 50%"></div>
@@ -72,7 +82,7 @@
             Processing
           </div>
           <div class="position-absolute start-50 translate-middle">
-            Shipped
+            Completed & Shipped
           </div>
           <div class="position-absolute start-100 translate-middle">
             Delivered
@@ -109,4 +119,9 @@
 
 
 <style>
+    .form-inline {
+    flex-direction: column;
+    align-items: stretch;
+    display: inline;
+  }
 </style>

@@ -84,6 +84,19 @@
         }
     }
 
+    function get_status_value(order_detail)
+    {
+        let order_status_value = 0;
+        if (order_detail.order_status == "Processing")
+            order_status_value = 0;
+        else if (order_detail.order_status == "Completed")
+            order_status_value = 1;
+        else
+            order_status_value = 2;
+        return order_status_value;
+    }
+
+
 </script>
 
 <div class="container-md mt-3">
@@ -97,9 +110,10 @@
             <th scope="col">First</th>
             <th scope="col">Last</th>
             <th class="colsort" on:click={() => {sortTable(4, 1); }} scope="col">Total Sale</th>
-            <th class="colsort" on:click={() => {sortTable(5); }} scope="col">Order Status</th>
-            <th class="colsort" hidden on:click={() => {sortTable(6, 1); }} scope="col">Timestamp</th>
-            <th class="colsort" on:click={() => {sortTable(6, 1); }} scope="col">Date</th>
+            <th class="colsort" on:click={() => {sortTable(6); }} scope="col">Order Status</th>
+            <th class="colsort" hidden scope="col">Status Value</th>
+            <th class="colsort" hidden on:click={() => {sortTable(7, 1); }} scope="col">Timestamp</th>
+            <th class="colsort" on:click={() => {sortTable(7, 1); }} scope="col">Date</th>
             <th scope="col">Address Detail</th>
           </tr>
         </thead>
@@ -112,6 +126,7 @@
                 <td>{order_detail.last_name}</td>
                 <td>{order_detail.total}</td>
                 <td>{order_detail.order_status}</td>
+                <td hidden>{get_status_value(order_detail)}</td>
                 <td hidden>{order_detail.DateAndTime}</td>
                 <td>{helpers.unix_to_time(order_detail.DateAndTime)}</td>
                 <td>
