@@ -1,10 +1,11 @@
 import nodemailer from "nodemailer";
+import * as helpers from "./helpers.js"
 
 const test_email    = "niucsci467project24@gmail.com";
 const test_pwd      = "mtoe nsvh rlqz gmmq";
 
 export async function
-send_invoice(to)
+send_invoice(to, details)
 {
 
     // Create the transporter.
@@ -18,19 +19,35 @@ send_invoice(to)
 
     // Customer order information.
     const orderInfo = {
-        name: "Ryan Solfisburg",
-        receiptNum: "1421",
-        trackingLink: "https://www.youtube.com/watch?v=GmG4X9PGOXs",
+        name: details.first + " " + details.last,
+        receiptNum: details.orderid,
+        trackingLink: `http://localhost:9001/order/customer/${details.orderid}`,
         items: [
+          /*
             { itemnum: "4215", description: "Product 1", quantity: 1, price: 5000 },
             { itemnum: "45-A421E", description: "Product 2", quantity: 2, price: 25 },
             { itemnum: "", description: "Product 3", quantity: 5, price: 2.99 }
+          */
             // Add more items as needed.
         ]
     }
-
-
-
+/*
+  item: {
+    number: 2,
+    description: 'wiper blade pair',
+    price: 23.37,
+    weight: 2.5,
+    pictureURL: 'http://blitz.cs.niu.edu/pics/wip.jpg'
+  },
+*/
+    details.cart.items.forEach(line => {
+      orderInfo.items.push({
+        itemnum: line.item.number,
+        description: line.item.description,
+        quantity: line.qty,
+        price: line.item.price,
+      })
+    });
 
 
 
@@ -47,6 +64,8 @@ send_invoice(to)
             </tr>`;
     }).join('');
 
+    let ship_cost = parseFloat(details.total) - totalPrice;
+
     // Total Price Row.
     const totalRow = `
         <tr>
@@ -54,6 +73,12 @@ send_invoice(to)
             <td class="fw-700 text-right border-top">$${totalPrice.toFixed(2)}</td>
         </tr>`;
 
+    const shipping = `
+    <tr>
+        <td class="fw-700 border-top">Shipping charge</td>
+        <td class="fw-700 text-right border-top">$${ship_cost.toFixed(2)}</td>
+    </tr>
+    `
 
     // HTML Content
     var htmlContent = `
@@ -64,21 +89,22 @@ send_invoice(to)
                     <h1 style="font-size: 2.25rem; font-weight: 800;">Thanks for your order,<br>
                     ${orderInfo.name}!</h1>
                     <p style="margin-top: 16px;">The estimated delivery time for your order is 2-3 business days.<br>
-                    Track your order on the Chris' Private Part website.</p>
+                    Track your order on the NIU Automotive website.</p>
                     <a href="${orderInfo.trackingLink}" style="display: inline-block; background-color: #3b82f6; color: #fff; border-radius: 9999px; padding: 12px 24px; width: 100%; max-width: 155px; text-align: center; text-decoration: none; margin-top: 16px;">Track Your Order</a>
                 </div>
                 <div style="border-radius: 1.5rem; padding: 16px; margin-bottom: 24px; background-color: #fff;">
-                    <h3 style="text-align: center; margin-bottom: 16px;">Receipt from Chris' Private Parts</h3>
+                    <h3 style="text-align: center; margin-bottom: 16px;">Receipt from NIU Automotive</h3>
                     <p style="text-align: center; color: #6b7280; margin-bottom: 8px;">Receipt #${orderInfo.receiptNum}</p>
                     <table style="width: 100%; border-collapse: collapse;">
                         <tbody>
                             ${itemsHTML}
                             <tr style="height: 20px;"><td colspan="2"></td></tr> <!-- Empty row for spacing -->
+                            ${shipping}
                             ${totalRow}
                         </tbody>
                     </table>
                     <hr style="margin: 24px 0; border: none; border-top: 1px solid #d1d5db;">
-                    <p style="margin-bottom: 0;">If you have any questions, contact us at questions@chrisprivateparts.com.</p>
+                    <p style="margin-bottom: 0;">If you have any questions, contact us at questions@niuautomotive.com.</p>
                 </div>
             </div>
         </body>`;
@@ -87,7 +113,7 @@ send_invoice(to)
     var mailOptions = {
         from: 'niucsci467project24@gmail.com',
         to: to,
-        subject: `Your Chris' Private Parts order`,
+        subject: `Your NIU Automative Order`,
         html: htmlContent
     };
 
@@ -103,7 +129,7 @@ send_invoice(to)
 }
 
 export async function
-send_confirmation(to)
+send_confirmation(to, details)
 {
 
     // Create the transporter.
@@ -117,12 +143,12 @@ send_confirmation(to)
 
     // Customer order information.
     const orderInfo = {
-        name: "Chris Dejong",
-        city: "Dekalb",
-        state: "Illinois",
-        trackingLink: "https://www.youtube.com/watch?v=5PsnxDQvQpw",
-        orderNum: "214521",
-        shipmentTotal: 42.3
+        name: details.first + " " + details.last,
+        city: details.city,
+        state: details.state,
+        trackingLink: `http://localhost:9001/order/customer/${details.orderid}`,
+        orderNum: details.orderid,
+        shipmentTotal: parseFloat(details.total)
     }
 
 
@@ -139,7 +165,7 @@ send_confirmation(to)
                     <h1 style="font-size: 2.25rem; font-weight: 800;">Hello, ${orderInfo.name}!<br>
                     Your order has shipped!</h1>
                     <p style="margin-top: 16px;">The estimated delivery time for your order is 2-3 business days.<br>
-                    Track your order on the Chris' Private Part website.</p>
+                    Track your order on the NIU Automotive website.</p>
                     <a href="${orderInfo.trackingLink}" style="display: inline-block; background-color: #3b82f6; color: #fff; border-radius: 9999px; padding: 12px 24px; width: 100%; max-width: 155px; text-align: center; text-decoration: none; margin-top: 16px;">Track Your Order</a>
                 </div>
                 <div style="border-radius: 1.5rem; padding: 16px; margin-bottom: 24px; background-color: #fff;">
@@ -152,11 +178,11 @@ send_confirmation(to)
                     <br>
                     <!-- Shipment total box -->
                     <div style="display: flex; align-items: center; justify-content: space-between; background-color: #f3f4f6; padding: 6px;">
-                        <p style="font-weight: 500; font-size: 1.25rem;">Shipment total</p>
+                        <p style="font-weight: 500; font-size: 1.25rem;">Shipment total&nbsp;</p>
                         <p style="font-weight: 500; font-size: 1.25rem;">$${orderInfo.shipmentTotal.toFixed(2)}</p>
                     </div>
                     <hr style="margin: 24px 0; border: none; border-top: 1px solid #d1d5db;">
-                    <p style="margin-bottom: 0;">If you have any questions, contact us at questions@chrisprivateparts.com.</p>
+                    <p style="margin-bottom: 0;">If you have any questions, contact us at questions@niuautomotive.com.</p>
                 </div>
             </div>
         </body>`;
@@ -165,7 +191,7 @@ send_confirmation(to)
     var mailOptions = {
         from: 'niucsci467project24@gmail.com',
         to: to,
-        subject: `Your Chris' Private Parts order has shipped (#${orderInfo.orderNum})`,
+        subject: `Your order has shipped (#${orderInfo.orderNum})`,
         html: htmlContent
     };
 
