@@ -1,9 +1,29 @@
 import * as helpers from "$lib/helpers.js";
+import * as mailer from "$lib/mailer.js";
 import * as ccp from "$lib/creditprocessor.js";
 import { set_connection } from "$lib/legacydb.js";
 import { redirect } from '@sveltejs/kit';
 import sqlite3 from 'sqlite3';
 const sqlite = sqlite3.verbose();
+
+function fetch_inventory(inventory_id)
+{
+
+  return new Promise((resolve, reject) => {
+    let database_instance = new sqlite.Database("./db/projectdb.sl3");
+    database_instance.serialize(() => {
+
+        let fetch_orders = `SELECT * FROM Warehouse WHERE PartID = ${inventory_id}`;
+  
+        database_instance.all(fetch_orders, (error, data) => {
+          if (error) console.log(error);
+          return resolve(data);
+      });
+
+    });
+  });
+
+}
 
 function add_customer(details)
 {
@@ -22,9 +42,9 @@ function add_customer(details)
           console.log(fetch_orders);
 
           database_instance.run(fetch_orders, function () {
-              resolve(this.lastID);
+            mailer.send_invoice(details.email, details);
+            resolve(this.lastID);
           });
-  
 
 
       });
@@ -56,8 +76,11 @@ function place_order(details)
           INSERT INTO LineItem (ID, part_number, quantity) VALUES
           ('${details.transaction_id}', ${citem.item.number}, ${citem.qty});
           `;
-          database_instance.run(set_litem, function () {
-          });
+          database_instance.run(set_litem, function () {});
+
+          // update warehouse
+          let set_warehouse = `UPDATE Warehouse SET quantity = ${citem.wh - citem.qty} WHERE PartID = ${citem.item.number}`;
+          database_instance.run(set_warehouse, function () {});
         }
         
         resolve();
@@ -233,7 +256,7 @@ FormData {
     console.log(order_status_result.data);
     if (order_status_result.hasOwnProperty("errors"))
     {
-      redirect(301, "/cart");
+      redirect(301, "/cart?error_" + order_status_result.errors[0]);
     }
 
     let transaction_id  = order_status_result.data.trans;
@@ -250,8 +273,16 @@ FormData {
       let res = await connection
         .query(`SELECT * FROM parts WHERE number = '${cart_items.items[i].item}'`)
         .then(([rows, fields]) => { return rows; });
-      cart_data.items.push({item: res[0], qty: cart_items.items[i].qty });
+
+      let inventory = await fetch_inventory(cart_items.items[i].item);
+      console.log(inventory);
+
+      if (inventory.length != 1 || inventory[0].quantity < cart_items.items[i].qty)
+        redirect(301, "/cart?noinventory_" + cart_items.items[i].item);
+
+      cart_data.items.push({item: res[0], qty: cart_items.items[i].qty, wh: inventory[0].quantity });
     }
+    cart_data.items.forEach(item => console.log(item));
 
     let customer_id = await add_customer({
       first: first_name,
@@ -262,10 +293,14 @@ FormData {
       state: state,
       zip: zipcode,
       addr1: addr1,
-      addr2: addr2
+      addr2: addr2,
+      orderid: transaction_id,
+      total: order_total,
+      cart: cart_data,
     });
 
     await place_order({
+      email: email,
       transaction_id: transaction_id,
       customer: customer_id,
       weight_id: weight_class,
@@ -274,6 +309,9 @@ FormData {
       total: order_total,
       line_items: cart_data
     });
+
+    request.cookies.delete("cart", { path: '/' });
+    redirect(301, "/cart?ordersuccess");
 
   }
 };

@@ -301,7 +301,12 @@ async function main()
         database_instance.all(fetch_test, (error, data) => {
             console.log(data);
         });
-    
+        
+        let check_warehouse = `SELECT * FROM Warehouse`;
+        database_instance.all(check_warehouse, (error, data) => {
+          console.log(data);
+        });
+          
     });
 
 }
