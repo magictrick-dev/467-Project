@@ -27,6 +27,9 @@
         <li class="nav-item">
           <a class="nav-link" href="/employee">Employee Portal</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/warehouse">Warehouse Portal</a>
+        </li>
       </ul>
     </div>
     <div class="container-fluid">

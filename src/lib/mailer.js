@@ -21,7 +21,7 @@ send_invoice(to, details)
     const orderInfo = {
         name: details.first + " " + details.last,
         receiptNum: details.orderid,
-        trackingLink: "https://www.youtube.com/watch?v=GmG4X9PGOXs",
+        trackingLink: `http://localhost:9001/order/customer/${details.orderid}`,
         items: [
           /*
             { itemnum: "4215", description: "Product 1", quantity: 1, price: 5000 },
@@ -89,7 +89,7 @@ send_invoice(to, details)
                     <h1 style="font-size: 2.25rem; font-weight: 800;">Thanks for your order,<br>
                     ${orderInfo.name}!</h1>
                     <p style="margin-top: 16px;">The estimated delivery time for your order is 2-3 business days.<br>
-                    Track your order on the Chris' Private Part website.</p>
+                    Track your order on the NIU Automotive website.</p>
                     <a href="${orderInfo.trackingLink}" style="display: inline-block; background-color: #3b82f6; color: #fff; border-radius: 9999px; padding: 12px 24px; width: 100%; max-width: 155px; text-align: center; text-decoration: none; margin-top: 16px;">Track Your Order</a>
                 </div>
                 <div style="border-radius: 1.5rem; padding: 16px; margin-bottom: 24px; background-color: #fff;">
@@ -146,7 +146,7 @@ send_confirmation(to, details)
         name: details.first + " " + details.last,
         city: details.city,
         state: details.state,
-        trackingLink: "https://www.youtube.com/watch?v=5PsnxDQvQpw",
+        trackingLink: `http://localhost:9001/order/customer/${details.orderid}`,
         orderNum: details.orderid,
         shipmentTotal: parseFloat(details.total)
     }
