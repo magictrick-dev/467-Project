@@ -23,7 +23,7 @@ async function main()
 
     let weight_table_schema = `
         CREATE TABLE WeightTable (
-            ID INTEGER PRIMARY KEY NOT NULL,
+            ID INTEGER PRIMARY KEY,
             weight_maximum INTEGER NOT NULL, 
             price REAL NOT NULL
         );
@@ -49,39 +49,38 @@ async function main()
         CREATE TABLE Purchase (
             transaction_ID VARCHAR(50) NOT NULL,
             customer_ID INTEGER NOT NULL,
-            bracket_ID INTEGER NOT NULL,
+            bracket_ID INTEGER,
             authorization_code INTEGER,
             order_status VARCHAR(99),
             DateAndTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             total REAL NOT NULL,
             PRIMARY KEY (transaction_ID),
             FOREIGN KEY (transaction_ID) REFERENCES LineItem(ID),
-            FOREIGN KEY (customer_ID) REFERENCES Customer(ID),
-            FOREIGN KEY (bracket_ID) REFERENCES WeightTable(ID)
+            FOREIGN KEY (customer_ID) REFERENCES Customer(ID)
         );
     `;
 
     let customers = `
         INSERT INTO Customer (first_name, last_name, email, country, city, customer_state,
             postal_code, Address_line1, Address_line2) VALUES
-            ('Richard', 'Enball', 'denball@gmail.com', 'USA', 'New York', 'NY', '16969', '123 Main St', 'Apt 1'),
-            ('Michael', 'Jordan', 'michael@NBA.com', 'UK', 'London', '', 'W1D 4AG', '789 Oak St', 'Flat 2'),
-            ('James', 'Whitehurst', 'Whitehurst@thanksAlotEA.com', 'Australia', 'Sydney', 'NSW', '2000', '101 Elm St', ''),
-            ('David', 'Attenborough', 'david@IStillDrive.com', 'France', 'Paris', '', '75001', '321 Pine St', 'Unité B'),
-            ('Todd', 'Howard', 'Todd@ItsABathesdaGame.com', 'Germany', 'Berlin', '', '10115', '567 Cedar St', ''),
-            ('Daniel', 'Rogness', 'daniel@yahoo.com', 'Spain', 'Madrid', '', '28001', '890 Birch St', ''),
-            ('James', 'Stephans', 'jstephans@corprateSpy.com', 'Italy', 'Rome', '', '00100', '234 Maple St', ''),
-            ('Yves', 'Guillemot', 'Guillemot@AAAAgames.com', 'Japan', 'Tokyo', '', '100-0001', '678 Oak St', ''),
-            ('Bilbo', 'Baggins', 'B.baggins@myPrecious.com', 'Brazil', 'Rio de Janeiro', 'RJ', '20040-020', '135 Pine St', '');
+            ('Richard', 'Enball', 'magiktrikdev@gmail.com', 'USA', 'New York', 'NY', '16969', '123 Main St', 'Apt 1'),
+            ('Michael', 'Jordan', 'magiktrikdev@gmail.com', 'UK', 'London', '', 'W1D 4AG', '789 Oak St', 'Flat 2'),
+            ('James', 'Whitehurst', 'magiktrikdev@gmail.com', 'Australia', 'Sydney', 'NSW', '2000', '101 Elm St', ''),
+            ('David', 'Attenborough', 'magiktrikdev@gmail.com', 'France', 'Paris', '', '75001', '321 Pine St', 'Unité B'),
+            ('Todd', 'Howard', 'magiktrikdev@gmail.com', 'Germany', 'Berlin', '', '10115', '567 Cedar St', ''),
+            ('Daniel', 'Rogness', 'magiktrikdev@gmail.com', 'Spain', 'Madrid', '', '28001', '890 Birch St', ''),
+            ('James', 'Stephans', 'magiktrikdev@gmail.com', 'Italy', 'Rome', '', '00100', '234 Maple St', ''),
+            ('Yves', 'Guillemot', 'magiktrikdev@gmail.com', 'Japan', 'Tokyo', '', '100-0001', '678 Oak St', ''),
+            ('Bilbo', 'Baggins', 'magiktrikdev@gmail.com', 'Brazil', 'Rio de Janeiro', 'RJ', '20040-020', '135 Pine St', '');
     `;
 
     let weights = `
         INSERT INTO WeightTable (ID, weight_maximum, price) VALUES
-            (1, 15,  14.54),
-            (2, 20,  21.98),
-            (3, 30,  33.21),
-            (4, 50,  87.21),
-            (5, 100, 142.73);
+            (1, 4,  14.54),
+            (2, 9,  21.98),
+            (3, 13,  33.21),
+            (4, 20,  87.21),
+            (5, 27, 142.73);
     `;
 
     let warehouse = `
@@ -145,7 +144,7 @@ async function main()
     let database_instance = new sqlite.Database("./db/projectdb.sl3");
     database_instance.serialize(() => {
         
-        /*
+
         // Clear all existing tables from the database.
         console.log("Clearing all existing tables.\n")
         database_instance.run("DROP TABLE Customer;", (error) => {
@@ -284,27 +283,6 @@ async function main()
         database_instance.all(fetch_full_order, (error, data) => {
             if (error) console.log(error);
             else console.log(data);
-        });
-        */
-
-        database_instance.all("SELECT * FROM Purchase", (error, data) => {
-            console.log(data);
-        });
-
-        let fetch_test = `
-        SELECT * FROM LineItem
-        JOIN Purchase ON Purchase.transaction_ID = LineItem.ID
-        JOIN Customer ON Purchase.Customer_ID = Customer.ID
-        WHERE LineItem.ID = '46c27d7f-0f20-492b-b1b1-44a6ee93788e';
-        `;
-
-        database_instance.all(fetch_test, (error, data) => {
-            console.log(data);
-        });
-        
-        let check_warehouse = `SELECT * FROM Warehouse`;
-        database_instance.all(check_warehouse, (error, data) => {
-          console.log(data);
         });
           
     });

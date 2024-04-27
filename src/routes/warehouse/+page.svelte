@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Customer Order Details</title>
+	<title>Warehouse Portal</title>
 </svelte:head>
 
 

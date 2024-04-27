@@ -30,13 +30,16 @@
         <li class="nav-item">
           <a class="nav-link" href="/warehouse">Warehouse Portal</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/administration">Administration Portal</a>
+        </li>
       </ul>
     </div>
     <div class="container-fluid">
-      <form class="d-flex" role="search">
+      <form class="d-flex" role="search" method="POST" action="/">
         <div class="input-group mb-1">
-          <input type="text" class="form-control" placeholder="Product Search">
-          <button class="btn btn-outline-secondary" type="button" id="button-addon2">
+          <input type="text" class="form-control" name="filter" placeholder="Product Search">
+          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">
             Search
           </button>
         </div>
@@ -44,3 +47,7 @@
     </div>
   </div>
 </nav>
+
+<style>
+
+</style>
