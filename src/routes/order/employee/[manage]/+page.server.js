@@ -91,10 +91,7 @@ async function send_email(id)
   }
 
   // Whoops, someone got an email.......
-  if (order_details[0].email == "magiktrikdev@gmail.com")
-    send_confirmation(order_details[0].email, details);
-  else
-    console.log("Not emailing...");
+  send_confirmation(order_details[0].email, details);
 
 }
 

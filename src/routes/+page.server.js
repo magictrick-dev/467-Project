@@ -1,4 +1,5 @@
 import { set_connection } from "$lib/legacydb.js";
+import { setContext } from "svelte";
 
 export async function load() {
 
@@ -42,4 +43,14 @@ export async function load() {
     }
 
 
+}
+
+export const actions = {
+  default: async (request) => {
+    const form_data = await request.request.formData();
+    const filter = form_data.get("filter");
+    return {
+        query: filter,
+    }
+  }
 }
