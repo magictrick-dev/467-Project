@@ -146,7 +146,7 @@ export async function load({ cookies }) {
             let res = await connection
               .query(`SELECT * FROM parts WHERE number = '${cart_items.items[i].item}'`)
               .then(([rows, fields]) => { return rows; });
-            cart_data.items.push({item: res[0], qty: cart_items.items[i].qty });
+            cart_data.items.push({item: res[0], qty: cart_items.items[i].qty, img: res[0].pictureURL });
           }
 
           let weight_brackets = await fetch_weights();

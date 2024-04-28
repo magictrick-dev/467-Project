@@ -42,10 +42,11 @@
           <li class="list-group-item">
             <div class="d-flex justify-content-between">
               <div class="p-2">
+                <img height="60px" class="float-start" src="{product.img}" alt="productimage"/>
                 <strong>{helpers.to_pretty(product.item.description)}</strong><br/>
                 <span>Weight: {product.item.weight} lbs.</span>
                 <form method="POST" action="?/update">
-                  <div class="input-group mb-3">
+                  <div class="input-group">
                     <input type="number" min="0" class="form-control" placeholder="Quantity" value="{product.qty}" name="qty">
                     <button class="btn btn-secondary" type="cart" name="item" value="{product.item.number}" id="button-addon1">Update</button>
                   </div>

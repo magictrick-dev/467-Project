@@ -47,6 +47,7 @@ export async function load({ params }) {
   {
     
     let whr = await warehouse_query(parts[i].number);
+
     let avail = 0;
     let set = false;
     if (whr.length == 1)
@@ -59,6 +60,7 @@ export async function load({ params }) {
       item: parts[i],
       qty: avail,
       set: set,
+      img: parts[i].pictureURL,
     });
 
   }
