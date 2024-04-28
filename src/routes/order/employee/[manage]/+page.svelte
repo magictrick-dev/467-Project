@@ -95,6 +95,7 @@
         <ul class="list-group p-2">
           {#each data.order as item}
             <li class="list-group-item">
+            
               <div class="d-flex justify-content-between">
                 <div class="p-1">
                   Part Number: {item.part_number}

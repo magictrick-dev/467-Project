@@ -33,9 +33,10 @@
     <ul class="list-group p-2">
       {#each data.items as product}
         <li class="list-group-item">
+          <img height="60px" class="float-start" src="{product.img}" alt="productimage"/>
           <div class="d-flex justify-content-between">
             <div class="p-1">
-              {helpers.to_pretty(product.item.description)}
+              <strong>{helpers.to_pretty(product.item.description)}</strong>
               <p>
                 Quantity: {product.qty}
               </p>

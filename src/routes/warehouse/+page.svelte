@@ -15,6 +15,7 @@
     <table class="table table-striped table-hover">
       <thead>
         <tr>
+          <th scope="col"></th>
           <th scope="col">Part Number</th>
           <th scope="col">Part Name</th>
           <th scope="col">Database Set</th>
@@ -25,6 +26,7 @@
       <tbody>
         {#each data.parts as part}
         <tr>
+          <td><img height="40px" class="float-start img-thumbnail" src="{part.img}" alt="productimage"/></td>
           <td># {part.item.number}</td>
           <td>{helpers.to_pretty(part.item.description)}</td>
           <td>{helpers.to_pretty(`${part.set}`)}</td>
